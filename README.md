@@ -7,7 +7,9 @@ To free people from manually posting and reposting event/media content, which co
 
 ## Content
 1. Supported Content Types :
+
     a. Text
+    
     b. URLs
     
 2. Supported Content Sources : 
