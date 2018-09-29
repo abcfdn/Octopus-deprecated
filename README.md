@@ -8,17 +8,17 @@ To free people from manually posting and reposting event/media content, which co
 ## Content
 1. Supported Content Types:
 
-a. Text
+    a. Text
 
-b. URLs
+    b. URLs
     
 2. Supported Content Sources : 
 
-a. Online
-..* News
-..* Articles
+    a. Online
+    * News
+    * Articles
     
-b. Offline 
+    b. Offline 
     * Tech Talks
     * Meetups
     * Hackathons
