@@ -13,9 +13,11 @@ To free people from manually posting and reposting event/media content, which co
     b. URLs
     
 2. Supported Content Sources : 
+
   a. Online
     * News
     * Articles
+    
   b. Offline 
     * Tech Talks
     * Meetups
@@ -35,4 +37,6 @@ To free people from manually posting and reposting event/media content, which co
 * Emails
 
 ## Features
-1. In one click (a buttom click or command line input), Octopus can delivers event/media content to supported media platforms as desired. 2. Content monitoring/filtering in Slack/Discord/Telegram using chatbot. 
+1. In one click (a buttom click or command line input), Octopus can delivers event/media content to supported media platforms as desired. 
+
+2. Content monitoring/filtering in Slack/Discord/Telegram using chatbot. 
