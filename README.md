@@ -1,4 +1,5 @@
 # Octopus (章鱼烧)
+[![Build Status](https://travis-ci.org/abcfdn/Octopus.svg?branch=master)](https://travis-ci.org/abcfdn/Octopus)
 
 A content CI/CD (continues integration/delivery) management application for ABC Blockchain Community
 
