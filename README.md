@@ -13,15 +13,14 @@ To free people from manually posting and reposting event/media content, which co
     b. URLs
     
 2. Supported Content Sources : 
-
-  a. Online
-    * News
-    * Articles
+    a. Online
+        * News
+        * Articles
     
-  b. Offline 
-    * Tech Talks
-    * Meetups
-    * Hackathons
+    b. Offline 
+        * Tech Talks
+        * Meetups
+        * Hackathons
     
 ## Platforms 
 ### Going to Support
