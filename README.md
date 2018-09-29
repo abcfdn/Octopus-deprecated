@@ -6,9 +6,12 @@ A content CI/CD (continues integration/delivery) management application for ABC 
 To free people from manually posting and reposting event/media content, which consist of text and urls, from one media platform to antoher.
 
 ## Content
-1. Supported Content Types : 
-  a. Text
-  b. URLs
+1. Supported Content Types :
+
+    a. Text
+    
+    b. URLs
+    
 2. Supported Content Sources : 
   a. Online
     * News
