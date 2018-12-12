@@ -47,4 +47,3 @@ for row in parse_input('input.csv'):
     draw = ImageDraw.Draw(img)
     write_text(row[0], row[1], row[2], row[3]);
     img.save('./images/' + row[0] + '.png')
-    break
