@@ -1,0 +1,4 @@
+# yaml syntax: https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
+GOOGLE:
+    API_KEY: XXX
+    SCHEDULE_TSV_PATH: XXX

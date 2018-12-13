@@ -1,0 +1,4 @@
+# yaml syntax: https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
+GOOGLE:
+    API_KEY: AIzaSyBEkw3OweSXC-hdL7DzlLuLmX72Mlf5-_8
+    SCHEDULE_TSV_PATH: https://docs.google.com/spreadsheets/d/e/2PACX-1vRkBoqOQROxVQNCyxGUvQ8bdF645-fhSUK2ingJIQncX3rPwNqp-P2gbYswiCSFLKxMF3OU1SrCzJkS/pub?output=tsv
