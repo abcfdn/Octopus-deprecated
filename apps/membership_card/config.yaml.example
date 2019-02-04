@@ -1,0 +1,20 @@
+template: ./images/template.png
+input_file: ./input/members.csv
+output_dir: ./output/
+text_style:
+  name:
+    x_pos: 105
+    y_pos: 481
+    gap: 2
+    font:
+      type: arial
+      size: 23
+    fill: (230, 230, 230, 255) # white
+  date:
+    x_pos: 870
+    y_pos: 478
+    gap: 0
+    font:
+      type: arial
+      size: 23
+    fill: (230, 230, 230, 255) # white
