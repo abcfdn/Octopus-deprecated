@@ -1,10 +1,22 @@
-from PIL import ImageFont, ImageDraw, Image
+# -*- encoding: UTF-8 -*-
 
-WHITE = (230, 230, 230, 255)
-FONT_FILL = (90, 90, 90, 255)
+from PIL import ImageFont, ImageDraw, Image
+import numpy as np
+
 
 class ImageComposer:
-    def load_template(self, filename):
+    def __init__(self, pieces):
+        self.pieces = pieces
+
+    def vertical_combine(self):
+        self.comb = np.vstack((np.asarray(p) for p in pieces))
+
+    def save(self, filename):
+        self.comb.save(filename)
+
+
+class ImagePiece:
+    def __init__(self, filename):
         self.img = Image.open(filename)
         self.draw = ImageDraw.Draw(img)
 
@@ -23,5 +35,8 @@ class ImageComposer:
             w, h = font.getsize(c)
             x_pos += (w + gap)
 
-    def save(filename):
+    def img(self):
+        return self.img
+
+    def save(self, filename):
         self.img.save(filename)

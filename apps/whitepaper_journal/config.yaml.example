@@ -1,0 +1,26 @@
+# yaml syntax: https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
+GOOGLE:
+    CREDS_FILE:
+    SCOPES:
+        - https://www.googleapis.com/auth/gmail.compose
+        - https://www.googleapis.com/auth/spreadsheets.readonly
+    SHEET_ID:
+POSTER:
+    template_path: ./image_template/
+    text_style:
+      name:
+        x_pos:
+        y_pos:
+        gap:
+        font:
+          type:
+          size:
+        fill:
+      date:
+        x_pos:
+        y_pos:
+        gap:
+        font:
+          type:
+          size:
+        fill:

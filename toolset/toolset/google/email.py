@@ -1,6 +1,7 @@
 # -*- encoding: UTF-8 -*-
 
-import googleapiclient.discovery import build
+from googleapiclient.discovery import build
+from .service import GoogleService
 
 
 class GoogleMail(GoogleService):

@@ -46,5 +46,13 @@ Image
 ### Slack
 
 ## Command to build
+`pip3 install -r requirements.txt`
+
+### Develop
+`python3 setup.py develop`
+
+### Install
 `python3 setup.py bdist_wheel`
 `python3 -m pip install dist/abc_toolset-0.0.1-py3-none-any.whl`
+
+

@@ -14,5 +14,5 @@ class GoogleService:
     def load_creds(self, settings):
         creds_file = settings['CREDS_FILE']
         scopes = settings['SCOPES']
-        return service_account.Credentials.
-            from_service_account_file(creds_file, scopes=scopes)
+        return service_account.Credentials.from_service_account_file(
+            creds_file, scopes=scopes)
