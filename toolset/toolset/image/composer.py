@@ -61,6 +61,10 @@ class ImagePiece:
                 draw.text((x_pos, y_pos), c, font=font, fill=fill)
                 x_pos += (w + gap)
 
+    def draw_img(self, img, settings):
+        #x_pos = settings['x_pos']
+        #y_pos = settings['y_pos']
+        pass
 
     def draw_img(self, img, setting):
         pass
