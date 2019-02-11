@@ -134,7 +134,7 @@ class WhitepaperJournal(App):
         sheet_service = GoogleSheet(self.config['GOOGLE'])
         events = sheet_service.read_as_map(self.config['INPUT']['event'], 2, 10)
         events = sorted(events, key=lambda k: k['date'])
-        self.create_poster(events, ['Generalized Mining', 'Consensus'])
+        self.create_poster(events, ['Consensus'])
 
 
 def main():
