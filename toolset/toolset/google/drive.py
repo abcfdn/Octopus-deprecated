@@ -5,7 +5,7 @@ import io
 
 from googleapiclient.discovery import build
 from .service import GoogleService
-from apiclient.http import MediaIoBaseDownload
+from apiclient.http import MediaIoBaseDownload, MediaFileUpload
 
 DELEGATED_USER = 'contact@abcer.world'
 
@@ -17,6 +17,15 @@ class GoogleDrive(GoogleService):
     def create_service(self, creds):
         delegated_creds = creds.with_subject(DELEGATED_USER)
         return build('drive', 'v3', credentials=delegated_creds)
+
+    def upload_file(self, localpath, mimetype, parent):
+        filename = os.path.basename(localpath)
+        file_metadata = {'name': filename, 'parents': [parent]}
+        media = MediaFileUpload(localpath, mimetype=mimetype)
+        f = self.service.files().create(body=file_metadata,
+                                        media_body=media,
+                                        fields='id').execute()
+        print('Uploaded with file_id=%s' % f.get('id'))
 
     def download_file(self, file_id, local_filepath):
         request = self.service.files().get_media(fileId=file_id)

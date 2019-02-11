@@ -3,12 +3,14 @@
 import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import copy
+from datetime import datetime
 from toolset.image.composer import ImageComposer, ImagePiece
 from toolset.google.sheet import GoogleSheet
 from toolset.google.drive import GoogleDrive
 import toolset.utils.util as util
 from app import App
+
+IMG_MIME = 'image/jpeg'
 
 
 class WhitepaperJournalPoster:
@@ -20,6 +22,7 @@ class WhitepaperJournalPoster:
         self.drive_service = drive_service
         self.txt_style = settings['txt_style']
         self.img_style = settings['img_style']
+        self.remote_output = settings['output']
 
         self.init_cache(settings['cache'])
         self.init_imgs()
@@ -27,6 +30,9 @@ class WhitepaperJournalPoster:
     def init_cache(self, cache_settings):
         local_path = cache_settings['local_path']
         util.create_if_not_exist(local_path)
+
+        self.local_output = os.path.join(local_path, 'generated')
+        util.create_if_not_exist(self.local_output)
 
         self.template_dir = os.path.join(local_path, 'template')
         util.create_if_not_exist(self.template_dir)
@@ -98,11 +104,18 @@ class WhitepaperJournalPoster:
         composer.zstack(self.img_style['avatar']['start'])
         return composer.to_img_piece()
 
-    def compose(self):
+    def compose(self, filename=None, upload=True):
         self.content.append(self.tail)
         composer = ImageComposer(self.content)
         composer.vstack()
-        return composer.save('./new_post.png')
+
+        if not filename:
+            filename = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+        filepath = os.path.join(self.local_output, filename + '.png')
+        composer.save(filepath)
+        if upload:
+            self.drive_service.upload_file(
+                    filepath, IMG_MIME, self.remote_output)
 
 
 class WhitepaperJournal(App):
