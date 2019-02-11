@@ -8,6 +8,12 @@ def create_if_not_exist(dir_name):
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
 
+def get_file(dir_name, prefix):
+    files = os.listdir(dir_name)
+    for f in files:
+        if f.startswith(prefix):
+            return os.path.join(dir_name, f)
+
 def eth_account_from_email(email):
     seed = (email * (int(32/len(email))+1))[:32]
     acct = w3.eth.account.create(seed.upper())

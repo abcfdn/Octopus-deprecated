@@ -41,5 +41,3 @@ class GoogleDrive(GoogleService):
                 dest = os.path.join(local_path, file_name)
                 print('Downloading {} to {}'.format(file_name, dest))
                 self.download_file(f.get('id'), dest)
-            else:
-                print('{} is already downloaded, skipping...'.format(file_name))
