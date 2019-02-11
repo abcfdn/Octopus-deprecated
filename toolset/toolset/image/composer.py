@@ -6,8 +6,6 @@ import sys
 from PIL import ImageFont, ImageDraw, Image, ImageOps
 import numpy as np
 
-FONT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fonts')
-
 
 class ImageComposer:
     def __init__(self, pieces):
@@ -40,7 +38,8 @@ class ImagePiece:
         return cls(Image.open(filename))
 
     def get_font(self, font_setting):
-        font_path = os.path.join(FONT_PATH, '%s.ttf' % font_setting['type'])
+        font_path = os.path.join(font_setting['font_dir'],
+                                 '%s.ttf' % font_setting['type'])
         return ImageFont.truetype(font_path, font_setting['size'])
 
     def word_size(self, font, word):

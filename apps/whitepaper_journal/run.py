@@ -18,7 +18,7 @@ class WhitepaperJournalPoster:
 
     def __init__(self, drive_service, settings):
         self.drive_service = drive_service
-        self.text_style = settings['txt_style']
+        self.txt_style = settings['txt_style']
         self.img_style = settings['img_style']
 
         self.init_cache(settings['cache'])
@@ -28,41 +28,50 @@ class WhitepaperJournalPoster:
         local_path = cache_settings['local_path']
         util.create_if_not_exist(local_path)
 
-        self.template_path = os.path.join(local_path, 'template')
-        util.create_if_not_exist(self.template_path)
-        self.drive_service.sync_folder(cache_settings['template'], self.template_path)
+        self.template_dir = os.path.join(local_path, 'template')
+        util.create_if_not_exist(self.template_dir)
+        self.drive_service.sync_folder(cache_settings['template'], self.template_dir)
 
-        self.avatars_path = os.path.join(local_path, 'avatars')
-        util.create_if_not_exist(self.avatars_path)
-        self.drive_service.sync_folder(cache_settings['avatars'], self.avatars_path)
+        self.avatar_dir = os.path.join(local_path, 'avatar')
+        util.create_if_not_exist(self.avatar_dir)
+        self.drive_service.sync_folder(cache_settings['avatar'], self.avatar_dir)
+
+        self.font_dir = os.path.join(local_path, 'font')
+        util.create_if_not_exist(self.font_dir)
+        self.drive_service.sync_folder(cache_settings['font'], self.font_dir)
 
     def init_imgs(self):
-        header_file = os.path.join(self.template_path, 'header.png')
+        header_file = os.path.join(self.template_dir, 'header.png')
         self.header = ImagePiece.from_file(header_file)
 
-        tail_file = os.path.join(self.template_path, 'tail.png')
+        tail_file = os.path.join(self.template_dir, 'tail.png')
         self.tail = ImagePiece.from_file(tail_file)
 
-        schedule_file = os.path.join(self.template_path, 'schedule.png')
+        schedule_file = os.path.join(self.template_dir, 'schedule.png')
         self.schedule = ImagePiece.from_file(schedule_file)
 
-        event_sep_file = os.path.join(self.template_path, 'item_sep.png')
+        event_sep_file = os.path.join(self.template_dir, 'item_sep.png')
         self.event_sep = ImagePiece.from_file(event_sep_file)
 
-        logo_file = os.path.join(self.template_path, 'logo.png')
+        logo_file = os.path.join(self.template_dir, 'logo.png')
         self.logo = ImagePiece(logo_file)
 
         self.content = [self.header, self.schedule]
+
+    def draw_text(self, img, text, settings):
+        settings['font']['font_dir'] = self.font_dir
+        img.draw_text(text, settings)
 
     # events should belong to same topic
     def add_topic(self, events):
         if not len(events):
             return
 
-        topic_file = os.path.join(self.template_path, 'topic.png')
+        topic_file = os.path.join(self.template_dir, 'topic.png')
         topic_img = ImagePiece.from_file(topic_file)
-        topic = events[0]['topic']
-        topic_img.draw_text('Topic: ' + topic, self.text_style['topic'])
+        self.draw_text(topic_img,
+                       'Topic: ' + events[0]['topic'],
+                       self.txt_style['topic'])
         self.content.append(topic_img)
 
         event_imgs =[self.create_event(event) for event in events]
@@ -74,12 +83,12 @@ class WhitepaperJournalPoster:
         event['datetime'] = '{} {}'.format(event['date'], event['time'])
         event['address'] = event['address1'] + '\n' + event['address2']
 
-        item_file = os.path.join(self.template_path, 'item.png')
+        item_file = os.path.join(self.template_dir, 'item.png')
         event_img = ImagePiece.from_file(item_file)
         for field in self.TXT_FIELDS:
-            event_img.draw_text(event[field], self.text_style[field])
+            self.draw_text(event_img, event[field], self.txt_style[field])
 
-        avatar_file = util.get_file(self.avatars_path, event['presenter_name'])
+        avatar_file = util.get_file(self.avatar_dir, event['presenter_name'])
         if not avatar_file:
             raise('No avatar file found for {}'.format(event['presenter_name']))
         avatar_img = ImagePiece.from_file(avatar_file)
@@ -87,7 +96,6 @@ class WhitepaperJournalPoster:
 
         composer = ImageComposer([event_img, avatar_img])
         composer.zstack(self.img_style['avatar']['start'])
-        composer.save('event.png')
         return composer.to_img_piece()
 
     def compose(self):

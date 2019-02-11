@@ -9,7 +9,8 @@ INPUT:
 POSTER:
     cache:
       local_path: /tmp/whitepaper_journal/
-      avatars: 1qGo3opGOS8rdcsr3Fc7j79y_LnWPxNvC
+      avatar: 1qGo3opGOS8rdcsr3Fc7j79y_LnWPxNvC
+      font: 1giYvAN0_5gs71c9Vj5quHZ2syvKuj-5K
       template: 1cEOHqziwd_7rLWrWwfR21SHL3srPyRz1
     img_style:
       avatar: # circled thumbnail
