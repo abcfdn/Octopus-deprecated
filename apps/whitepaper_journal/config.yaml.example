@@ -12,6 +12,7 @@ POSTER:
       avatar: 1qGo3opGOS8rdcsr3Fc7j79y_LnWPxNvC
       font: 1giYvAN0_5gs71c9Vj5quHZ2syvKuj-5K
       template: 1cEOHqziwd_7rLWrWwfR21SHL3srPyRz1
+    output: 1c0yLRYyGD0wD8BV89aR8BEKYHhvB5hyd
     img_style:
       avatar: # circled thumbnail
         start: [150, 300]
