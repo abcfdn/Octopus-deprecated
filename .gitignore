@@ -116,5 +116,5 @@ dmypy.json
 .pyre/
 
 # config related
-**/config.yaml
+**/*.yaml.prod
 **/.DS_Store

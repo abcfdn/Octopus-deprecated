@@ -1,0 +1,55 @@
+template: 1cEOHqziwd_7rLWrWwfR21SHL3srPyRz1
+output: 1c0yLRYyGD0wD8BV89aR8BEKYHhvB5hyd
+img_style:
+  avatar: # circled thumbnail
+    start: [150, 300]
+    size: [165, 165]
+txt_style:
+  topic:
+    start: [90, 40]
+    x_max: 690
+    gap: 2
+    font:
+      type: impact
+      size: 50
+    fill: [219, 232, 252, 255]
+  datetime:
+    start: [150, 1]
+    x_max: 720
+    gap: 0
+    font:
+      type: arial
+      size: 45
+    fill: [144, 159, 184, 255]
+  session_name:
+    start: [150, 75]
+    x_max: 720
+    gap: 0
+    font:
+      type: impact
+      size: 48
+    fill: [219, 232, 252, 255]
+  presenter_name:
+    start: [350, 350]
+    x_max: 780
+    gap: 0
+    font:
+      type: arial-bold
+      size: 40
+    fill: [219, 232, 252, 255]
+  presenter_title:
+    start: [350, 410]
+    x_max: 750
+    gap: 0
+    font:
+      type: arial
+      size: 25
+    fill: [144, 159, 184, 255]
+  address:
+    start: [200, 538]
+    x_max: 780
+    gap: 1
+    font:
+      type: arial
+      size: 30
+    fill: [144, 159, 184, 255]

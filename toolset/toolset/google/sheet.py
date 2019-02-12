@@ -3,6 +3,8 @@
 from googleapiclient.discovery import build
 from .service import GoogleService
 
+logger = logging.getLogger('google_sheet')
+
 
 class GoogleSheet(GoogleService):
     HEADER_RANGE = "Schedule!1:1"
@@ -20,7 +22,8 @@ class GoogleSheet(GoogleService):
     def read_header(self, sheet_id):
         fields = self.read(sheet_id, self.HEADER_RANGE).get('values')
         if not len(fields) or not len(fields[0]):
-            raise("No data found")
+            logging.warning("No data found")
+            return []
         # Project Name => project_name
         return [field.lower().replace(' ', '_') for field in fields[0]]
 

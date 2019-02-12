@@ -12,7 +12,7 @@ class GoogleService:
         raise("Not Implemented")
 
     def load_creds(self, settings):
-        creds_file = settings['CREDS_FILE']
-        scopes = settings['SCOPES']
+        creds_file = settings['creds_file']
+        scopes = settings['scopes']
         return service_account.Credentials.from_service_account_file(
             creds_file, scopes=scopes)

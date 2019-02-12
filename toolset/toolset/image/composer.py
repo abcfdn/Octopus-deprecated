@@ -6,6 +6,8 @@ import sys
 from PIL import ImageFont, ImageDraw, Image, ImageOps
 import numpy as np
 
+logger = logging.getLogger('image_poster')
+
 
 class ImageComposer:
     def __init__(self, pieces):
@@ -17,7 +19,7 @@ class ImageComposer:
 
     def zstack(self, start_point):
         if len(self.imgs) != 2:
-            print("Only two imgs are supported in zstack")
+            logging.error('Only two imgs are supported in zstack')
         [background, foreground] = self.imgs
         background.paste(foreground, start_point, foreground)
         self.comb = background
@@ -42,13 +44,6 @@ class ImagePiece:
                                  '%s.ttf' % font_setting['type'])
         return ImageFont.truetype(font_path, font_setting['size'])
 
-    def word_size(self, font, word):
-        width = 0
-        for c in word:
-            w, h = font.getsize(c)
-            width += w
-        return width, h
-
     def draw_text(self, text, settings):
         [x_pos, y_pos] = settings['start']
         x_max = settings['x_max']
@@ -58,7 +53,7 @@ class ImagePiece:
 
         draw = ImageDraw.Draw(self.img)
         for word in text.split(' '):
-            ww, wh = self.word_size(font, word)
+            ww, wh = draw.textsize(word, font=font)
             if x_pos + ww >= x_max:
                 x_pos = settings['start'][0]
                 y_pos += wh
@@ -73,6 +68,15 @@ class ImagePiece:
                 draw.text((x_pos, y_pos), c, font=font, fill=fill)
                 x_pos += (w + gap)
 
+    def crop_to_square(self):
+        weight, height = self.img.size
+        new_length = min(weight, height)
+        left = (width - new_length)/2
+        top = (height - new_length)/2
+        right = (width + new_length)/2
+        bottom = (height + new_length)/2
+        self.im.crop((left, top, right, bottom))
+
     def to_circle_thumbnail(self, size):
         bigsize = (size[0] * 3, size[1] * 3)
         mask = Image.new('L', bigsize, 0)
@@ -80,6 +84,7 @@ class ImagePiece:
         draw.ellipse((0, 0) + bigsize, fill=255)
         mask = mask.resize(size, Image.ANTIALIAS)
 
+        self.crop_to_square()
         self.img = self.img.resize(size, Image.ANTIALIAS)
         self.img = ImageOps.fit(
             self.img, size, method=Image.ANTIALIAS, centering=(0.5, 0.5))

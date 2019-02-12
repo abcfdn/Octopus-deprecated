@@ -1,36 +1,32 @@
 # -*- encoding: UTF-8 -*-
 
-import os, sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import os
 
 from datetime import datetime
 from toolset.image.composer import ImageComposer, ImagePiece
-from toolset.google.sheet import GoogleSheet
 from toolset.google.drive import GoogleDrive
 import toolset.utils.util as util
-from app import App
+from app.base import Task
 
 IMG_MIME = 'image/jpeg'
+logger = logging.getLogger('whitepaper_journal_topic_poster')
 
 
-class WhitepaperJournalPoster:
+class WhitepaperJournalTopicPoster(Task):
     TXT_FIELDS = ['datetime', 'session_name', 'presenter_name',
                   'presenter_title', 'address']
     IMG_FIELDS = ['presenter_avatar']
 
-    def __init__(self, drive_service, settings):
+    def __init__(self, drive_service, common_config, task_config):
         self.drive_service = drive_service
+        super().__init__(common_config, task_config)
+        self.remote_output = settings['output']
         self.txt_style = settings['txt_style']
         self.img_style = settings['img_style']
-        self.remote_output = settings['output']
-
         self.init_cache(settings['cache'])
-        self.init_imgs()
+        self.reset()
 
     def init_cache(self, cache_settings):
-        local_path = cache_settings['local_path']
-        util.create_if_not_exist(local_path)
-
         self.local_output = os.path.join(local_path, 'generated')
         util.create_if_not_exist(self.local_output)
 
@@ -46,7 +42,7 @@ class WhitepaperJournalPoster:
         util.create_if_not_exist(self.font_dir)
         self.drive_service.sync_folder(cache_settings['font'], self.font_dir)
 
-    def init_imgs(self):
+    def reset(self):
         header_file = os.path.join(self.template_dir, 'header.png')
         self.header = ImagePiece.from_file(header_file)
 
@@ -73,6 +69,7 @@ class WhitepaperJournalPoster:
         if not len(events):
             return
 
+        logger.info('Rendering topic {}'.format(event[0]['topic'])
         topic_file = os.path.join(self.template_dir, 'topic.png')
         topic_img = ImagePiece.from_file(topic_file)
         self.draw_text(topic_img,
@@ -86,6 +83,8 @@ class WhitepaperJournalPoster:
                                  for img in pair][:-1])
 
     def create_event(self, event):
+        logger.info('Rendering event {}'.format(event['session_name'])
+
         event['datetime'] = '{} {}'.format(event['date'], event['time'])
         event['address'] = event['address1'] + '\n' + event['address2']
 
@@ -104,7 +103,7 @@ class WhitepaperJournalPoster:
         composer.zstack(self.img_style['avatar']['start'])
         return composer.to_img_piece()
 
-    def compose(self, filename=None, upload=True):
+    def process(self):
         self.content.append(self.tail)
         composer = ImageComposer(self.content)
         composer.vstack()
@@ -118,29 +117,3 @@ class WhitepaperJournalPoster:
                     filepath, IMG_MIME, self.remote_output)
 
 
-class WhitepaperJournal(App):
-    def __init__(self):
-        super().__init__()
-
-    def create_poster(self, events, topics):
-        drive_service = GoogleDrive(self.config['GOOGLE'])
-        poster = WhitepaperJournalPoster(drive_service, self.config['POSTER'])
-        for topic in topics:
-            filtered = [event for event in events if event['topic'] == topic]
-            poster.add_topic(filtered)
-        poster.compose()
-
-    def run(self):
-        sheet_service = GoogleSheet(self.config['GOOGLE'])
-        events = sheet_service.read_as_map(self.config['INPUT']['event'], 2, 10)
-        events = sorted(events, key=lambda k: k['date'])
-        self.create_poster(events, ['Generalized Mining', 'Consensus'])
-
-
-def main():
-    app = WhitepaperJournal()
-    app.run()
-
-
-if __name__ == '__main__':
-    main()
