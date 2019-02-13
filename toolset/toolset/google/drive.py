@@ -2,6 +2,7 @@
 
 import os
 import io
+import logging
 
 from googleapiclient.discovery import build
 from .service import GoogleService

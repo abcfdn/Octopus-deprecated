@@ -1,6 +1,0 @@
-google:
-    creds_file:
-    scopes:
-        - https://www.googleapis.com/auth/gmail.compose
-        - https://www.googleapis.com/auth/drive
-local_root: /tmp/whitepaper_journal/

@@ -2,6 +2,7 @@
 
 import os
 import sys
+import logging
 
 from PIL import ImageFont, ImageDraw, Image, ImageOps
 import numpy as np
@@ -39,15 +40,13 @@ class ImagePiece:
     def from_file(cls, filename):
         return cls(Image.open(filename))
 
-    def get_font(self, font_setting):
-        font_path = os.path.join(font_setting['font_dir'],
-                                 '%s.ttf' % font_setting['type'])
+    def get_font(self, font_dir, font_setting):
+        font_path = os.path.join(font_dir, '%s.ttf' % font_setting['type'])
         return ImageFont.truetype(font_path, font_setting['size'])
 
-    def draw_text(self, text, settings):
+    def draw_text(self, text, font, settings):
         [x_pos, y_pos] = settings['start']
         x_max = settings['x_max']
-        font = self.get_font(settings['font'])
         gap = settings['gap']
         fill = tuple(settings['fill'])
 

@@ -1,6 +1,7 @@
 # -*- encoding: UTF-8 -*-
 
 import os
+import yaml
 import csv
 from web3.auto import w3
 
@@ -32,3 +33,16 @@ def save_as_csv(to_csv, filename, delimeter='\t'):
             w = csv.DictWriter(f, keys=keys, delimiter=delimeter)
             w.writeheader()
             w.writerows(to_csv)
+
+def load_yaml(filename):
+    with open(filename, 'r') as f:
+        return yaml.load(f)
+
+def deepmerge(source, dest):
+    for key, value in source.items():
+        if isinstance(value, dict):
+            node = dest.setdefault(key, {})
+            deepmerge(value, node)
+        else:
+            dest[key] = value
+    return dest

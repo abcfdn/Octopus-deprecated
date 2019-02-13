@@ -1,5 +1,7 @@
 # -*- encoding: UTF-8 -*-
 
+import logging
+
 from googleapiclient.discovery import build
 from .service import GoogleService
 
@@ -27,8 +29,9 @@ class GoogleSheet(GoogleService):
         # Project Name => project_name
         return [field.lower().replace(' ', '_') for field in fields[0]]
 
-    def read_as_map(self, sheet_id, start_row, end_row):
+    def read_as_map(self, sheet_id, row_range):
         fields = self.read_header(sheet_id)
-        results = self.read(sheet_id, 'Schedule!{}:{}'.format(start_row, end_row))
+        results = self.read(sheet_id, 'Schedule!{}:{}'.format(
+            row_range[0], row_range[1]))
         return [dict(zip(fields, row[0:len(fields)]))
                 for row in results.get('values')]
