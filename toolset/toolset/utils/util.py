@@ -3,7 +3,6 @@
 import os
 import yaml
 import csv
-from web3.auto import w3
 
 def create_if_not_exist(dir_name):
     if not os.path.exists(dir_name):
@@ -14,11 +13,6 @@ def get_file(dir_name, prefix):
     for f in files:
         if f.startswith(prefix):
             return os.path.join(dir_name, f)
-
-def eth_account_from_email(email):
-    seed = (email * (int(32/len(email))+1))[:32]
-    acct = w3.eth.account.create(seed.upper())
-    return acct.address, acct.privateKey.hex()
 
 def read_csv(filename, delimeter='\t'):
     with open(filename, 'r') as csvfile:
