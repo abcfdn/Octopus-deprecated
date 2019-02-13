@@ -68,13 +68,13 @@ class ImagePiece:
                 x_pos += (w + gap)
 
     def crop_to_square(self):
-        weight, height = self.img.size
-        new_length = min(weight, height)
+        width, height = self.img.size
+        new_length = min(width, height)
         left = (width - new_length)/2
         top = (height - new_length)/2
         right = (width + new_length)/2
         bottom = (height + new_length)/2
-        self.im.crop((left, top, right, bottom))
+        self.img.crop((left, top, right, bottom))
 
     def to_circle_thumbnail(self, size):
         bigsize = (size[0] * 3, size[1] * 3)

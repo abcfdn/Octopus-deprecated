@@ -14,10 +14,10 @@ class Resource:
         self.sync_to_local(data_config)
 
     def sync_to_local(self, data_config):
-        for resource in data_config:
+        for resource in data_config.values():
             if 'local' in resource:
                 util.create_if_not_exist(resource['local'])
-                if 'remote' in folder:
+                if 'remote' in resource:
                     self.drive_service.sync_folder(resource['remote'],
                                                    resource['local'])
 

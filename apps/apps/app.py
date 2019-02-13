@@ -93,7 +93,6 @@ class App(Resource):
 def main():
     parser = init_parser()
     args = parser.parse_args()
-    print(args)
 
     app = App(TASKS)
     if args.work_type == 'task':

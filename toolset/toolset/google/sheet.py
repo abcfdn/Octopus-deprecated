@@ -15,7 +15,10 @@ class GoogleSheet(GoogleService):
         super().__init__(settings)
 
     def create_service(self, creds):
-        return build('sheets', 'v4', credentials=creds)
+        return build('sheets',
+                     'v4',
+                     credentials=creds,
+                     cache_discovery=False)
 
     def read(self, sheet_id, range_name):
         return self.service.spreadsheets().values().get(
