@@ -1,9 +1,4 @@
 data:
-  schedule:
-    remote: 1qWTjaUDtrAHYKqyu1aZoSR3yVK2LHFEap1WgfgcSX6c
-  avatar:
-    remote: 1qGo3opGOS8rdcsr3Fc7j79y_LnWPxNvC
-    local: /tmp/abc_apps/whitepaper_journal/avatar/
   template:
     remote: 1cEOHqziwd_7rLWrWwfR21SHL3srPyRz1
     local: /tmp/abc_apps/whitepaper_journal/topic_poster/template/

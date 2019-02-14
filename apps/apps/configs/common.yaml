@@ -3,7 +3,5 @@ google:
     scopes:
         - https://www.googleapis.com/auth/gmail.compose
         - https://www.googleapis.com/auth/drive
-data:
-    font:
-        remote: 1giYvAN0_5gs71c9Vj5quHZ2syvKuj-5K
-        local: /tmp/abc_apps/fonts/
+
+

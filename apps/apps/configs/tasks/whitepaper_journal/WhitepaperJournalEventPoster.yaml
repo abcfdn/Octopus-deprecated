@@ -1,0 +1,10 @@
+data:
+  template:
+    remote: 1cEOHqziwd_7rLWrWwfR21SHL3srPyRz1
+    local: /tmp/abc_apps/whitepaper_journal/event_poster/template/
+  output:
+    remote: 17h2O3oDz3zATmqtAgaFRpveRCHMKhz18
+    local: /tmp/abc_apps/whitepaper_journal/event_poster/output/
+img_style:
+  avatar: # circled thumbnail
+txt_style:

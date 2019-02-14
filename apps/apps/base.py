@@ -24,16 +24,26 @@ class Resource:
 
 class Task(Resource):
     def __init__(self, common_config):
-        task_config = self.load_task_config()
-        super().__init__(common_config['google'], task_config['data'])
-        util.deepmerge(task_config, common_config)
-        self.config = common_config
+        task_config = self.load_config()
+        self.config = util.deepmerge(task_config, common_config)
+        super().__init__(self.config['google'], self.config['data'])
 
-    def load_task_config(self):
+    def app_name(self):
+        raise('Not Implemented')
+
+    def load_config(self):
+        task_common_config = self.load_task_common_config()
         task_config_file = os.path.join(
             TASK_CONFIG_ROOT_PATH,
+            self.app_name(),
             '{}.yaml'.format(self.__class__.__name__))
-        return util.load_yaml(task_config_file)
+        task_config = util.load_yaml(task_config_file)
+        return utils.deepmerge(task_config, task_common_config)
+
+    def load_task_common_config(self):
+        config_file = os.path.join(
+            TASK_CONFIG_ROOT_PATH, self.app_name(), 'common.yaml')
+        return util.load_yaml(config_file)
 
     def process(self, args):
         raise("Not Implemented")

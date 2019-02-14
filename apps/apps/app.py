@@ -7,7 +7,7 @@ import logging
 import toolset.utils.util as util
 from base import Resource
 from constants import CONFIG_ROOT_PATH
-from tasks.whitepaper_journal_poster import WhitepaperJournalPoster
+from tasks.whitepaper_journal.topic_poster import WhitepaperJournalTopicPoster
 
 
 FORMAT = '%(asctime)s %(levelname)s %(message)s'
@@ -60,11 +60,9 @@ def init_parser():
     return parser
 
 
-
-class App(Resource):
+class App:
     def __init__(self, tasks):
         self.config = self.load_config()
-        super().__init__(self.config['google'], self.config['data'])
         self._tasks = {task.__name__ : task for task in tasks}
 
     def load_config(self):
