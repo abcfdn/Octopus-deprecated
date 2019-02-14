@@ -9,32 +9,34 @@ logger = logging.getLogger('google_sheet')
 
 
 class GoogleSheet(GoogleService):
-    HEADER_RANGE = "Schedule!1:1"
+    HEADER_RANGE = "{}!1:1"
 
     def __init__(self, settings):
         super().__init__(settings)
 
     def create_service(self, creds):
+        delegated_creds = creds.with_subject(self.DELEGATED_USER)
         return build('sheets',
                      'v4',
-                     credentials=creds,
+                     credentials=delegated_creds,
                      cache_discovery=False)
 
-    def read(self, sheet_id, range_name):
+    def read(self, file_id, range_name):
         return self.service.spreadsheets().values().get(
-            spreadsheetId=sheet_id, range=range_name).execute()
+            spreadsheetId=file_id, range=range_name).execute()
 
-    def read_header(self, sheet_id):
-        fields = self.read(sheet_id, self.HEADER_RANGE).get('values')
+    def read_header(self, file_id, sheet_name):
+        fields = self.read(file_id, '{}!1:1'.format(sheet_name)).get('values')
         if not len(fields) or not len(fields[0]):
             logging.warning("No data found")
             return []
-        # Project Name => project_name
-        return [field.lower().replace(' ', '_') for field in fields[0]]
+        # Project Name (blablabla) => project_name
+        return [field.split('(')[0].strip().lower().replace(' ', '_')
+                for field in fields[0] if field]
 
-    def read_as_map(self, sheet_id, row_range):
-        fields = self.read_header(sheet_id)
-        results = self.read(sheet_id, 'Schedule!{}:{}'.format(
-            row_range[0], row_range[1]))
+    def read_as_map(self, file_id, sheet_name, row_range):
+        fields = self.read_header(file_id, sheet_name)
+        results = self.read(file_id, '{}!{}:{}'.format(
+            sheet_name, row_range[0], row_range[1]))
         return [dict(zip(fields, row[0:len(fields)]))
                 for row in results.get('values')]

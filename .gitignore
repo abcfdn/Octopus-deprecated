@@ -117,4 +117,5 @@ dmypy.json
 
 # config related
 **/*.yaml.prod
+**/*.swp
 **/.DS_Store

@@ -8,6 +8,7 @@ import toolset.utils.util as util
 from base import Resource
 from constants import CONFIG_ROOT_PATH
 from tasks.whitepaper_journal.topic_poster import WhitepaperJournalTopicPoster
+from tasks.whitepaper_journal.event_poster import WhitepaperJournalEventPoster
 
 
 FORMAT = '%(asctime)s %(levelname)s %(message)s'
@@ -15,7 +16,8 @@ logging.basicConfig(format=FORMAT)
 logger = logging.getLogger('app')
 
 TASKS = [
-    WhitepaperJournalPoster
+    WhitepaperJournalTopicPoster,
+    WhitepaperJournalEventPoster
 ]
 
 
@@ -24,18 +26,8 @@ def add_task_arguments(task_parser):
             title='task',
             dest='task',
             help='task to run')
-
-    topic_poster_parser = subparsers.add_parser(
-            'WhitepaperJournalPoster',
-            help='run WhitepaperJournalPoster task')
-    group = topic_poster_parser.add_mutually_exclusive_group()
-    group.add_argument('--topics', help='create topic poster, comma separated')
-    group.add_argument(
-        '--session_name',
-        help='create event poster based on session name prefix')
-    group.add_argument(
-        '--date', help='create event poster based on date, format 02/15/2019')
-
+    for task in TASKS:
+        task.add_parser(subparsers)
 
 def add_flow_argument(flow_parser):
     subparsers = flow_parser.add_subparsers(

@@ -1,12 +1,16 @@
 data:
     schedule:
         remote: 1qWTjaUDtrAHYKqyu1aZoSR3yVK2LHFEap1WgfgcSX6c
+    event:
+        remote: 1HfkCbPD9ROydGo5vjgPiSUTP4sU-AFnprvdXcpqGlDc
     font:
         remote: 1giYvAN0_5gs71c9Vj5quHZ2syvKuj-5K
         local: /tmp/abc_apps/fonts/
     avatar:
         remote: 1qGo3opGOS8rdcsr3Fc7j79y_LnWPxNvC
         local: /tmp/abc_apps/whitepaper_journal/avatar/
+    logo:
+        local: /tmp/abc_apps/whitepaper_journal/logo/
     common_template:
         remote: 1vc_4t7iWVWdxcmiCmJ8MdHpmRSGYjoMd
         local: /tmp/abc_apps/whitepaper_journal/common/template/

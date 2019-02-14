@@ -38,7 +38,7 @@ class Task(Resource):
             self.app_name(),
             '{}.yaml'.format(self.__class__.__name__))
         task_config = util.load_yaml(task_config_file)
-        return utils.deepmerge(task_config, task_common_config)
+        return util.deepmerge(task_config, task_common_config)
 
     def load_task_common_config(self):
         config_file = os.path.join(

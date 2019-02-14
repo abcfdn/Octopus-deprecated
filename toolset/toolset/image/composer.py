@@ -6,8 +6,19 @@ import logging
 
 from PIL import ImageFont, ImageDraw, Image, ImageOps
 import numpy as np
+import textwrap
 
 logger = logging.getLogger('image_poster')
+
+
+# box is defined by [x, y, w]
+def start_x(box, width, align):
+    if align.lower() == 'left':
+        return box[0]
+    elif align.lower() == 'center':
+        return (int)(box[0] + box[2] / 2 - width / 2)
+    else:
+        logger.error('Unrecognized setting align={}'.format(align))
 
 
 class ImageComposer:
@@ -18,11 +29,13 @@ class ImageComposer:
         stacked = np.vstack((np.asarray(img) for img in self.imgs))
         self.comb = Image.fromarray(stacked)
 
-    def zstack(self, start_point):
+    def zstack(self, box, align):
         if len(self.imgs) != 2:
             logging.error('Only two imgs are supported in zstack')
         [background, foreground] = self.imgs
-        background.paste(foreground, start_point, foreground)
+        [x, y, _] = box
+        new_x = start_x(box, foreground.size[0], align)
+        background.paste(foreground, (new_x, y), foreground)
         self.comb = background
 
     def to_img_piece(self):
@@ -44,28 +57,34 @@ class ImagePiece:
         font_path = os.path.join(font_dir, '%s.ttf' % font_setting['type'])
         return ImageFont.truetype(font_path, font_setting['size'])
 
-    def draw_text(self, text, font, settings):
-        [x_pos, y_pos] = settings['start']
-        x_max = settings['x_max']
+    def draw_one_line(self, draw, line, font, fill, start, gap):
+        (x, y) = start
+        for c in line:
+            w, h = draw.textsize(c, font=font)
+            draw.text((x, y), c, font=font, fill=fill)
+            x += (w + gap[0])
+
+    def draw_text(self, lines, font, settings):
+        [x_pos, y_pos, width] = settings['box']
+        align = settings['align']
         gap = settings['gap']
         fill = tuple(settings['fill'])
 
         draw = ImageDraw.Draw(self.img)
-        for word in text.split(' '):
-            ww, wh = draw.textsize(word, font=font)
-            if x_pos + ww >= x_max:
-                x_pos = settings['start'][0]
-                y_pos += wh
-
-            for c in (word + ' '):
-                if c == '\n' or c == '\r':
-                    x_pos = settings['start'][0]
-                    y_pos += wh
-                    continue
-
-                w, h = font.getsize(c)
-                draw.text((x_pos, y_pos), c, font=font, fill=fill)
-                x_pos += (w + gap)
+        c_width = draw.textsize('a', font=font)[0]
+        for line in lines:
+            sublines = textwrap.wrap(line, width=(int)(width / c_width))
+            for subline in sublines:
+                text_w, h = draw.textsize(subline, font=font)
+                text_w += len(subline) * gap[0]
+                x_pos = start_x(settings['box'], text_w, align)
+                self.draw_one_line(draw,
+                                   subline,
+                                   font,
+                                   fill,
+                                   (x_pos, y_pos),
+                                   gap)
+                y_pos += (h + gap[1])
 
     def crop_to_square(self):
         width, height = self.img.size
@@ -75,6 +94,9 @@ class ImagePiece:
         right = (width + new_length)/2
         bottom = (height + new_length)/2
         self.img.crop((left, top, right, bottom))
+
+    def to_thumbnail(self, size):
+        self.img.thumbnail(size, Image.ANTIALIAS)
 
     def to_circle_thumbnail(self, size):
         bigsize = (size[0] * 3, size[1] * 3)
