@@ -7,7 +7,7 @@ data:
     local: /tmp/abc_apps/whitepaper_journal/event_poster/output/
 img_style:
     avatar: # circled thumbnail
-        box: [220, 40, 200]
+        box: [220, 20, 200]
         size: [160, 160]
         align: left
     logo:
@@ -32,12 +32,12 @@ txt_style:
             size: 65
         fill: [219, 232, 252, 255]
     session_summary:
-        box: [50, 200, 700]
+        box: [30, 200, 740]
         gap: [0, 5]
         align: center
         font:
             type: droid_sans_mono
-            size: 22
+            size: 25
         fill: [144, 159, 184, 255]
     presenter_name:
         box: [420, 60, 400]
@@ -56,12 +56,12 @@ txt_style:
             size: 25
         fill: [144, 159, 184, 255]
     presenter_introduction:
-        box: [100, 250, 600]
+        box: [60, 220, 680]
         gap: [0, 5]
         align: center
         font:
             type: droid_sans_mono
-            size: 22
+            size: 25
         fill: [144, 159, 184, 255]
     project_description:
         box: [100, 300, 600]
@@ -69,7 +69,7 @@ txt_style:
         align: center
         font:
             type: droid_sans_mono
-            size: 22
+            size: 25
         fill: [144, 159, 184, 255]
     datetime:
         box: [167, 50, 500]

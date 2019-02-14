@@ -115,14 +115,11 @@ class WhitepaperJournalEventPoster(WhitepaperJournalPosterBase):
         self.imgs.extend([title, content])
 
     def draw_session(self, event):
-        content = self.get_template('content.png')
-        self.draw_text(content,
+        session = self.get_template('session.png')
+        self.draw_text(session,
                        [event['session_name']],
                        self.txt_style['session_name'])
-        self.draw_text(content,
-                       [event['summary']],
-                       self.txt_style['session_summary'])
-        self.imgs.extend([content])
+        self.imgs.extend([session])
 
     def draw(self, event):
         self.reset()
