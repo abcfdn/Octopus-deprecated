@@ -4,11 +4,12 @@ import os
 import io
 import logging
 
+from urllib.parse import urlparse, parse_qs
+
 from googleapiclient.discovery import build
 from .service import GoogleService
 from apiclient.http import MediaIoBaseDownload, MediaFileUpload
 
-DELEGATED_USER = 'contact@abcer.world'
 logger = logging.getLogger('google_drive')
 
 
@@ -17,7 +18,7 @@ class GoogleDrive(GoogleService):
         super().__init__(settings)
 
     def create_service(self, creds):
-        delegated_creds = creds.with_subject(DELEGATED_USER)
+        delegated_creds = creds.with_subject(self.DELEGATED_USER)
         return build('drive',
                      'v3',
                      credentials=delegated_creds,
@@ -33,7 +34,27 @@ class GoogleDrive(GoogleService):
                                         fields='id').execute()
         logger.info('Uploaded with file_id={}'.format(f.get('id')))
 
-    def download_file(self, file_id, localpath):
+    def get_file_id_from_url(self, url):
+        query = parse_qs(urlparse(url).query)
+        ids = query.get('id', [])
+        if not len(ids):
+            logger.warning('No file to download')
+            return None
+        return ids[0]
+
+    def download_from_url(self, url, localdir):
+        file_id = self.get_file_id_from_url(url)
+        file_metadata = self.service.files().get(
+                fileId=file_id, fields="name").execute()
+        localpath = os.path.join(localdir, file_metadata['name'])
+        self.download_file(file_id, localpath)
+        return localpath
+
+    def download_file(self, file_id, localpath, overwrite=False):
+        if os.path.exists(localpath) and not overwrite:
+            logger.info('File {} exists, skipping'.format(localpath))
+            return
+
         logger.info('Downloading {} from drive to {}'.format(
             file_id, localpath))
         request = self.service.files().get_media(fileId=file_id)
@@ -47,18 +68,9 @@ class GoogleDrive(GoogleService):
     def sync_folder(self, folder_id, localpath, overwrite=False):
         logging.info('Syncing folder {} from drive to {}'.format(
             folder_id, localpath))
-        existing = set()
-        if not overwrite:
-            existing = set(os.listdir(localpath))
-        else:
-            logging.info('overwrite flag is set, will redownload' +
-                         'everything and overwrite local files')
-
         query = "'{}' in parents".format(folder_id)
         response = self.service.files().list(
             q=query, spaces='drive', fields='files(id, name)').execute()
         for f in response.get('files', []):
-            file_name = f.get('name')
-            if file_name not in existing:
-                dest = os.path.join(localpath, file_name)
-                self.download_file(f.get('id'), dest)
+            dest = os.path.join(localpath, f.get('name'))
+            self.download_file(f.get('id'), dest)

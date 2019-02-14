@@ -4,6 +4,8 @@ from google.oauth2 import service_account
 
 
 class GoogleService:
+    DELEGATED_USER = 'contact@abcer.world'
+
     def __init__(self, settings):
         creds = self.load_creds(settings)
         self.service = self.create_service(creds)

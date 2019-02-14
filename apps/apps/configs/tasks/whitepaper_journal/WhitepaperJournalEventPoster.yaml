@@ -1,10 +1,73 @@
 data:
   template:
-    remote: 1cEOHqziwd_7rLWrWwfR21SHL3srPyRz1
+    remote: 1vV5QEngrsh5x5ZB8PFO1fLtybT19Lf2_
     local: /tmp/abc_apps/whitepaper_journal/event_poster/template/
   output:
     remote: 17h2O3oDz3zATmqtAgaFRpveRCHMKhz18
     local: /tmp/abc_apps/whitepaper_journal/event_poster/output/
 img_style:
-  avatar: # circled thumbnail
+    avatar: # circled thumbnail
+        box: [220, 40, 200]
+        size: [160, 160]
+        align: left
+    logo:
+        box: [200, 30, 400]
+        size: [400, 200]
+        align: center
 txt_style:
+    title:
+        box: [200, 43, 400]
+        gap: [5, 0]
+        align: center
+        font:
+          type: impact
+          size: 60
+        fill: [219, 232, 252, 255]
+    presenter_name:
+        box: [420, 60, 400]
+        gap: [0, 0]
+        align: left
+        font:
+            type: arial-bold
+            size: 40
+        fill: [219, 232, 252, 255]
+    presenter_title:
+        box: [420, 115, 400]
+        gap: [0, 4]
+        align: left
+        font:
+            type: arial
+            size: 25
+        fill: [144, 159, 184, 255]
+    presenter_introduction:
+        box: [80, 250, 640]
+        gap: [1, 3]
+        align: center
+        font:
+            type: arial
+            size: 25
+        fill: [230, 230, 230, 255]
+    project_description:
+        box: [100, 200, 600]
+        gap: [1, 3]
+        align: center
+        font:
+            type: arial
+            size: 25
+        fill: [230, 230, 230, 255]
+    datetime:
+        box: [167, 50, 500]
+        gap: [0, 2]
+        align: left
+        font:
+          type: arial
+          size: 30
+        fill: [144, 159, 184, 255]
+    address:
+        box: [167, 40, 500]
+        gap: [0, 4]
+        align: left
+        font:
+          type: arial
+          size: 30
+        fill: [144, 159, 184, 255]
