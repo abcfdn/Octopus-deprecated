@@ -52,31 +52,31 @@ txt_style:
         gap: [0, 4]
         align: left
         font:
-            type: arial
+            type: arial-reg
             size: 25
         fill: [144, 159, 184, 255]
     presenter_introduction:
-        box: [60, 220, 680]
+        box: [50, 220, 700]
         gap: [0, 5]
         align: center
         font:
-            type: droid_sans_mono
-            size: 25
-        fill: [144, 159, 184, 255]
+            type: arial-mono
+            size: 27
+        fill: [219, 232, 252, 255]
     project_description:
         box: [100, 300, 600]
         gap: [0, 5]
         align: center
         font:
-            type: droid_sans_mono
-            size: 25
-        fill: [144, 159, 184, 255]
+            type: arial-mono
+            size: 30
+        fill: [219, 232, 252, 255]
     datetime:
         box: [167, 50, 500]
         gap: [0, 2]
         align: left
         font:
-          type: arial
+          type: arial-reg
           size: 30
         fill: [144, 159, 184, 255]
     address:
@@ -84,6 +84,6 @@ txt_style:
         gap: [0, 8]
         align: left
         font:
-          type: arial
+          type: arial-reg
           size: 30
         fill: [144, 159, 184, 255]
