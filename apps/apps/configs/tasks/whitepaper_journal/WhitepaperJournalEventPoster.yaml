@@ -24,21 +24,21 @@ txt_style:
           size: 60
         fill: [219, 232, 252, 255]
     session_name:
-        box: [20, 20, 760]
+        box: [90, 20, 680]
         gap: [0, 0]
-        align: center
+        align: left
         font:
             type: impact
-            size: 65
+            size: 60
         fill: [219, 232, 252, 255]
     session_summary:
-        box: [30, 200, 740]
-        gap: [0, 5]
-        align: center
+        box: [90, 350, 640]
+        gap: [2, 5]
+        align: left
         font:
-            type: droid_sans_mono
-            size: 25
-        fill: [144, 159, 184, 255]
+            type: arial
+            size: 27
+        fill: [219, 232, 252, 255]
     presenter_name:
         box: [420, 60, 400]
         gap: [0, 0]
@@ -49,41 +49,41 @@ txt_style:
         fill: [219, 232, 252, 255]
     presenter_title:
         box: [420, 115, 400]
-        gap: [0, 4]
+        gap: [0, 5, 5]
         align: left
         font:
-            type: arial-reg
+            type: arial
             size: 25
         fill: [144, 159, 184, 255]
     presenter_introduction:
-        box: [50, 220, 700]
-        gap: [0, 5]
-        align: center
+        box: [90, 280, 640]
+        gap: [2, 5]
+        align: left
         font:
-            type: arial-mono
-            size: 27
+            type: arial
+            size: 25
         fill: [219, 232, 252, 255]
     project_description:
-        box: [100, 300, 600]
-        gap: [0, 5]
-        align: center
+        box: [90, 380, 640]
+        gap: [2, 5]
+        align: left
         font:
-            type: arial-mono
-            size: 30
+            type: arial
+            size: 25
         fill: [219, 232, 252, 255]
     datetime:
         box: [167, 50, 500]
         gap: [0, 2]
         align: left
         font:
-          type: arial-reg
+          type: arial
           size: 30
-        fill: [144, 159, 184, 255]
+        fill: [219, 232, 252, 255]
     address:
         box: [167, 44, 500]
-        gap: [0, 8]
+        gap: [0, 4]
         align: left
         font:
-          type: arial-reg
+          type: arial
           size: 30
-        fill: [144, 159, 184, 255]
+        fill: [219, 232, 252, 255]

@@ -138,5 +138,5 @@ class WhitepaperJournalEventPoster(WhitepaperJournalPosterBase):
         self.draw(event)
         composer = ImageComposer(self.imgs)
         composer.vstack()
-        self.save(composer, filename='event2', upload=False)
+        self.save(composer, filename='event', upload=False)
 

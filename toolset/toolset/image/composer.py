@@ -10,6 +10,8 @@ import textwrap
 
 logger = logging.getLogger('image_poster')
 
+DEFAULT_LINE_GAP = 15
+
 
 # box is defined by [x, y, w]
 def start_x(box, width, align):
@@ -35,7 +37,8 @@ class ImageComposer:
         [background, foreground] = self.imgs
         [x, y, _] = box
         new_x = start_x(box, foreground.size[0], align)
-        foreground.putalpha(255)
+        if foreground.mode is not 'RGBA':
+            foreground.putalpha(255)
         background.paste(foreground, (new_x, y), foreground)
         self.comb = background
 
@@ -70,6 +73,7 @@ class ImagePiece:
         align = settings['align']
         gap = settings['gap']
         fill = tuple(settings['fill'])
+        p_gap = gap[2] if len(gap) > 2 else DEFAULT_LINE_GAP
 
         draw = ImageDraw.Draw(self.img)
         c_width = draw.textsize('a', font=font)[0]
@@ -87,6 +91,7 @@ class ImagePiece:
                                        (x_pos, y_pos),
                                        gap)
                     y_pos += (h + gap[1])
+                y_pos += p_gap
 
     def crop_to_square(self):
         width, height = self.img.size
