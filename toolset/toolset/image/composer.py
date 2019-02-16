@@ -35,6 +35,7 @@ class ImageComposer:
         [background, foreground] = self.imgs
         [x, y, _] = box
         new_x = start_x(box, foreground.size[0], align)
+        foreground.putalpha(255)
         background.paste(foreground, (new_x, y), foreground)
         self.comb = background
 
@@ -73,18 +74,19 @@ class ImagePiece:
         draw = ImageDraw.Draw(self.img)
         c_width = draw.textsize('a', font=font)[0]
         for line in lines:
-            sublines = textwrap.wrap(line, width=(int)(width / c_width))
-            for subline in sublines:
-                text_w, h = draw.textsize(subline, font=font)
-                text_w += len(subline) * gap[0]
-                x_pos = start_x(settings['box'], text_w, align)
-                self.draw_one_line(draw,
-                                   subline,
-                                   font,
-                                   fill,
-                                   (x_pos, y_pos),
-                                   gap)
-                y_pos += (h + gap[1])
+            for paragraph in line.split('\n'):
+                sublines = textwrap.wrap(paragraph, width=(int)(width / c_width))
+                for subline in sublines:
+                    text_w, h = draw.textsize(subline, font=font)
+                    text_w += len(subline) * gap[0]
+                    x_pos = start_x(settings['box'], text_w, align)
+                    self.draw_one_line(draw,
+                                       subline,
+                                       font,
+                                       fill,
+                                       (x_pos, y_pos),
+                                       gap)
+                    y_pos += (h + gap[1])
 
     def crop_to_square(self):
         width, height = self.img.size

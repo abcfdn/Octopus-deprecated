@@ -115,17 +115,20 @@ class WhitepaperJournalEventPoster(WhitepaperJournalPosterBase):
         self.imgs.extend([title, content])
 
     def draw_session(self, event):
-        session = self.get_template('session.png')
-        self.draw_text(session,
+        content = self.get_template('content.png')
+        self.draw_text(content,
                        [event['session_name']],
                        self.txt_style['session_name'])
-        self.imgs.extend([session])
+        self.draw_text(content,
+                       [event['summary']],
+                       self.txt_style['session_summary'])
+        self.imgs.append(content)
 
     def draw(self, event):
         self.reset()
+        self.draw_session(event)
         self.draw_datetime(event)
         self.draw_address(event)
-        self.draw_session(event)
         self.draw_speaker(event)
         self.draw_project(event)
 #        self.imgs.append(self.tail)
@@ -135,5 +138,5 @@ class WhitepaperJournalEventPoster(WhitepaperJournalPosterBase):
         self.draw(event)
         composer = ImageComposer(self.imgs)
         composer.vstack()
-        self.save(composer, filename='event', upload=False)
+        self.save(composer, filename='event2', upload=False)
 

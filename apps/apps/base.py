@@ -14,7 +14,9 @@ class Resource:
         self.sync_to_local(data_config)
 
     def sync_to_local(self, data_config):
-        for resource in data_config.values():
+        for key, resource in data_config.items():
+            if key == 'output':
+                continue
             if 'local' in resource:
                 util.create_if_not_exist(resource['local'])
                 if 'remote' in resource:
