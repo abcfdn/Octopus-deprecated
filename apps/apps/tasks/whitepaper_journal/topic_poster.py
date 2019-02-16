@@ -68,8 +68,10 @@ class WhitepaperJournalTopicPoster(WhitepaperJournalPosterBase):
             [schedule['address1'], schedule['address2']],
             self.txt_style['address'])
 
-        schedule['datetime'] = '{} {}'.format(schedule['date'],
-                                              schedule['time'])
+        event_time = self.readable_time(schedule['date'],
+                                        schedule['start_time'],
+                                        schedule['duration'])
+        schedule['datetime'] = '{} {}'.format(schedule['date'], event_time)
         for field in self.TXT_FIELDS:
             self.draw_text(schedule_img, [schedule[field]], self.txt_style[field])
 

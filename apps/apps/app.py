@@ -7,8 +7,10 @@ import logging
 import toolset.utils.util as util
 from base import Resource
 from constants import CONFIG_ROOT_PATH
+
 from tasks.whitepaper_journal.topic_poster import WhitepaperJournalTopicPoster
 from tasks.whitepaper_journal.event_poster import WhitepaperJournalEventPoster
+from tasks.whitepaper_journal.meetup import WhitepaperJournalMeetup
 
 
 FORMAT = '%(asctime)s %(levelname)s %(message)s'
@@ -17,7 +19,8 @@ logger = logging.getLogger('app')
 
 TASKS = [
     WhitepaperJournalTopicPoster,
-    WhitepaperJournalEventPoster
+    WhitepaperJournalEventPoster,
+    WhitepaperJournalMeetup
 ]
 
 

@@ -37,8 +37,10 @@ class ImageComposer:
         [background, foreground] = self.imgs
         [x, y, _] = box
         new_x = start_x(box, foreground.size[0], align)
-        if foreground.mode is not 'RGBA':
+        if foreground.mode is 'RGB':
             foreground.putalpha(255)
+        else:
+            foreground = foreground.convert('RGBA')
         background.paste(foreground, (new_x, y), foreground)
         self.comb = background
 

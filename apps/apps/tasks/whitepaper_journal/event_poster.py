@@ -3,7 +3,6 @@
 import os
 import logging
 
-from datetime import datetime
 from toolset.image.composer import ImageComposer, ImagePiece
 from toolset.google.sheet import GoogleSheet
 import toolset.utils.util as util
@@ -15,8 +14,6 @@ logger = logging.getLogger('whitepaper_journal_event_poster')
 
 
 class WhitepaperJournalEventPoster(WhitepaperJournalPosterBase):
-    FIELDS_TO_COMPARE = ['session_name', 'presenter_name']
-
     def __init__(self, common_config):
         super().__init__(common_config)
         self.txt_style = self.config['txt_style']
@@ -24,9 +21,9 @@ class WhitepaperJournalEventPoster(WhitepaperJournalPosterBase):
 
     @classmethod
     def add_parser(cls, parser):
-        topic_poster_parser = parser.add_parser(
+        event_poster_parser = parser.add_parser(
             cls.__name__, help='create whitepaper journal event poster')
-        group = topic_poster_parser.add_mutually_exclusive_group()
+        group = event_poster_parser.add_mutually_exclusive_group()
         group.add_argument('--event',
                            help='event_id, which is presenter name + date')
 
@@ -40,34 +37,12 @@ class WhitepaperJournalEventPoster(WhitepaperJournalPosterBase):
         self.location = self.get_template('location.png')
         self.imgs = [self.header, self.keywords, self.meetup]
 
-    def get_event_id(self, event):
-        return '{},{}'.format(event['site'], event['date'])
-
-    def get_schedule(self, event_id):
-        for schedule in self.schedules:
-            if event_id.lower() == self.get_event_id(schedule).lower():
-                return schedule
-        return None
-
-    def get_event(self, event_id):
-        schedule = self.get_schedule(event_id)
-        if not schedule:
-            logger.warning('No schedule found')
-            return None
-
-        for event in self.events:
-            matched = True
-            for f in self.FIELDS_TO_COMPARE:
-                matched &= (
-                    event[f].strip().lower() == schedule[f].strip().lower())
-            if matched:
-                event['schedule'] = schedule
-                return event
-        return None
-
     def draw_datetime(self, event):
-        date_time = [self.readable_datetime(event['schedule']['date']),
-                     event['schedule']['time']]
+        event_date = self.readable_date(event['schedule']['date'])
+        event_time = self.readable_time(event['schedule']['date'],
+                                        event['schedule']['start_time'],
+                                        event['schedule']['duration'])
+        date_time = [event_date, event_time]
         self.draw_text(self.datetime, date_time, self.txt_style['datetime'])
         self.imgs.append(self.datetime)
 

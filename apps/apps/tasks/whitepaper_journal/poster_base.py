@@ -3,46 +3,23 @@
 import os
 import logging
 
-import calendar
 from datetime import datetime
 
 from toolset.image.composer import ImageComposer, ImagePiece
-from toolset.google.sheet import GoogleSheet
 import toolset.utils.util as util
-from apps.base import Task
+from .base import WhitepaperJournalBase
+
 
 IMG_MIME = 'image/jpeg'
 
 
-class WhitepaperJournalPosterBase(Task):
+class WhitepaperJournalPosterBase(WhitepaperJournalBase):
     NUM_OF_ROWS_TO_READ = 1000
 
     def __init__(self, common_config):
         super().__init__(common_config)
-        self.load_schedule_and_events()
         self.txt_style = self.config['txt_style']
         self.img_style = self.config['img_style']
-
-    def load_schedule_and_events(self):
-        sheet_service = GoogleSheet(self.config['google'])
-        self.schedules = sheet_service.read_as_map(
-            self.config['data']['schedule']['remote'],
-            'Schedule',
-            (2, self.NUM_OF_ROWS_TO_READ + 1))
-        self.schedules.sort(key=lambda k: k['date'])
-
-        self.events = sheet_service.read_as_map(
-            self.config['data']['event']['remote'],
-            'Form Responses 1',
-            (2, self.NUM_OF_ROWS_TO_READ + 1))
-
-    def app_name(self):
-        return 'whitepaper_journal'
-
-    def readable_datetime(self, date):
-        date = datetime.strptime(date, '%Y/%m/%d')
-        weekday = calendar.day_name[date.weekday()]
-        return '{}, {}'.format(weekday, date.strftime("%B %d, %Y"))
 
     def get_common_template(self, basename):
         template_dir = self.config['data']['common_template']['local']
