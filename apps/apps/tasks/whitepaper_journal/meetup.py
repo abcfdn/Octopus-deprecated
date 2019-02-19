@@ -75,12 +75,15 @@ class WhitepaperJournalMeetup(WhitepaperJournalBase):
     def generate_description(self, event):
         livestream = self.generate_link('Livestream', event['schedule']['livestream'])
         summary = self.text_to_html(event['summary'])
+        presenter = '{}, {} at {}'.format(event['presenter_name'],
+                                          event['title'],
+                                          event['company/organization'])
         self_introdution = self.text_to_html(event['self-introduction'])
 
         return self.load_description() \
                 .replace('\n', ' ') \
                 .replace('##SUMMARY##', summary) \
-                .replace('##SPEKAER_NAME##', event['presenter_name']) \
+                .replace('##SPEKAER_NAME##', presenter) \
                 .replace('##SPEKAER_INTRODUCTION##', self_introdution) \
                 .replace('##GOTOMEETING##', livestream) \
                 .replace('##MATERAILS##', self.generate_materials(event)) \
@@ -109,8 +112,7 @@ class WhitepaperJournalMeetup(WhitepaperJournalBase):
 
     def create_event(self, event):
         payload = self.create_payload(event)
-#        response = self.meetup_service.update_event(meetup_event['id'], payload)
-#        return response
+        return self.meetup_service.create_event(payload)
 
     def update_event(self, event, meetup_event):
         payload = self.create_payload(event)
