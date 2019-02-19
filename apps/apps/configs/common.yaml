@@ -1,5 +1,5 @@
 google:
-    creds_file: /Users/shudong/credentials/decom-231205-88f320bc9297.json
+    creds_file: /root/credentials/decom-231205-88f320bc9297.json
     scopes:
         - https://www.googleapis.com/auth/gmail.compose
         - https://www.googleapis.com/auth/drive

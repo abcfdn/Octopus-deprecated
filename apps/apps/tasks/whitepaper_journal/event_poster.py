@@ -39,9 +39,7 @@ class WhitepaperJournalEventPoster(WhitepaperJournalPosterBase):
 
     def draw_datetime(self, event):
         event_date = self.readable_date(event['schedule']['date'])
-        event_time = self.readable_time(event['schedule']['date'],
-                                        event['schedule']['start_time'],
-                                        event['schedule']['duration'])
+        event_time = self.readable_time(event)
         date_time = [event_date, event_time]
         self.draw_text(self.datetime, date_time, self.txt_style['datetime'])
         self.imgs.append(self.datetime)

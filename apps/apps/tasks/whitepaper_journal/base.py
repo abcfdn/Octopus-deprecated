@@ -1,7 +1,8 @@
 # -*- encoding: UTF-8 -*-
 
 import calendar
-from datetime import datetime
+import dateparser
+from datetime import datetime, timedelta
 
 from apps.base import Task
 from apps.constants import WHITEPAPER_JOURNAL_APP
@@ -47,16 +48,23 @@ class WhitepaperJournalBase(Task):
             return number
         raise('Unrecognized duration')
 
-    def get_start_datetime(self, date, start_time):
-        date_time = '{} {}'.format(date, start_time)
-        return start_time.strptime(date_time, '%Y/%m/%d %I:%M %p')
+    def to_datetime(self, date, time):
+        date_time = '{} {} PST'.format(date, time)
+        return dateparser.parse(date_time)
+
+    def event_start_time(self, event):
+        return self.to_datetime(event['schedule']['date'],
+                                event['schedule']['start_time'])
+
+    def event_end_time(self, event):
+        start_time = self.event_start_time(event)
+        return start_time + timedelta(0, self.duration_as_sec(
+            event['schedule']['duration']))
 
     # date=2019/02/21, start_time=7:00pm, duration=2h
-    def readable_time(self, date, start_time, duration):
-        start_datetime = self.get_start_datetime(date, start_time)
-        end_datetime = datetime.timedelta(0, self.duration_as_sec(duration))
-        return '{}-{}'.format(start_time.strftime('%I:%M'),
-                              end_time.strftime('%I:%M %p'))
+    def readable_time(self, event):
+        return '{}-{}'.format(self.event_start_time(event).strftime('%I:%M'),
+                              self.event_end_time(event).strftime('%I:%M %p'))
 
     def readable_date(self, date):
         date = datetime.strptime(date, '%Y/%m/%d')

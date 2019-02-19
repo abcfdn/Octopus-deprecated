@@ -1,2 +1,13 @@
 meetup:
-  api_key: /Users/shudong/credentials/meetup_api_key.json
+    api_key: /root/credentials/meetup_api_key.json
+    featured_photo_id:
+        default: 477892811
+    venue_id:
+        dfg: 26092874
+        blockspace: 24851387
+    how_to_find_us: Email contact@abcer.world or post in the meetup group if you have questions.
+    rsvp_limit: 50
+data:
+    template:
+        remote: 1cDiqGJ0svN3RKq5yXn16XZVX7ks4r0Mn
+        local: /tmp/abc_apps/whitepaper_journal/meetup/template/
