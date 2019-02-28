@@ -42,7 +42,7 @@ class WhitepaperJournalTopicPoster(WhitepaperJournalPosterBase):
 
     def add_topic(self, topic):
         filtered = [schedule for schedule in self.schedules
-                             if schedule['topic'] == topic]
+            if schedule['topic'].strip().lower() == topic.strip().lower()]
         if not len(filtered):
             logging.warning('No schedule found for topic {}'.format(topic))
             return
@@ -68,9 +68,7 @@ class WhitepaperJournalTopicPoster(WhitepaperJournalPosterBase):
             [schedule['address1'], schedule['address2']],
             self.txt_style['address'])
 
-        event_time = self.readable_time(schedule['date'],
-                                        schedule['start_time'],
-                                        schedule['duration'])
+        event_time = self.readable_time({'schedule': schedule})
         schedule['datetime'] = '{} {}'.format(schedule['date'], event_time)
         for field in self.TXT_FIELDS:
             self.draw_text(schedule_img, [schedule[field]], self.txt_style[field])
