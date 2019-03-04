@@ -52,8 +52,8 @@ txt_style:
       size: 45
     fill: [144, 159, 184, 255]
   address:
-    box: [200, 530, 680]
-    gap: [1, 8]
+    box: [215, 530, 680]
+    gap: [1, 1]
     align: left
     font:
       type: arial

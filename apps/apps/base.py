@@ -15,11 +15,9 @@ class Resource:
 
     def sync_to_local(self, data_config):
         for key, resource in data_config.items():
-            if key == 'output':
-                continue
             if 'local' in resource:
                 util.create_if_not_exist(resource['local'])
-                if 'remote' in resource:
+                if 'remote' in resource and key is not 'output':
                     self.drive_service.sync_folder(resource['remote'],
                                                    resource['local'])
 
