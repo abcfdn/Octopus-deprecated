@@ -18,10 +18,9 @@ class GoogleDrive(GoogleService):
         super().__init__(settings)
 
     def create_service(self, creds):
-        delegated_creds = creds.with_subject(self.DELEGATED_USER)
         return build('drive',
                      'v3',
-                     credentials=delegated_creds,
+                     credentials=creds,
                      cache_discovery=False)
 
     def upload_file(self, localpath, mimetype, parent):

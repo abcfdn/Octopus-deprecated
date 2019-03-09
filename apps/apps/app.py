@@ -1,16 +1,12 @@
 # -*- encoding: UTF-8 -*-
 
-import os
 import argparse
 import logging
-
-import toolset.utils.util as util
-from base import Resource
-from constants import CONFIG_ROOT_PATH
 
 from tasks.whitepaper_journal.topic_poster import WhitepaperJournalTopicPoster
 from tasks.whitepaper_journal.event_poster import WhitepaperJournalEventPoster
 from tasks.whitepaper_journal.meetup import WhitepaperJournalMeetup
+from tasks.membership.card import MembershipCard
 
 
 FORMAT = '%(asctime)s %(levelname)s %(message)s'
@@ -20,7 +16,8 @@ logger = logging.getLogger('app')
 TASKS = [
     WhitepaperJournalTopicPoster,
     WhitepaperJournalEventPoster,
-    WhitepaperJournalMeetup
+    WhitepaperJournalMeetup,
+    MembershipCard,
 ]
 
 
@@ -57,16 +54,11 @@ def init_parser():
 
 class App:
     def __init__(self, tasks):
-        self.config = self.load_config()
         self._tasks = {task.__name__ : task for task in tasks}
-
-    def load_config(self):
-        common_config_file = os.path.join(CONFIG_ROOT_PATH, 'common.yaml')
-        return util.load_yaml(common_config_file)
 
     def get_task(self, task_name):
         if task_name in self._tasks:
-            return self._tasks[task_name](self.config)
+            return self._tasks[task_name]()
         return None
 
     def run_task(self, task_name, args):

@@ -13,8 +13,8 @@ class WhitepaperJournalBase(Task):
     NUM_OF_ROWS_TO_READ = 1000
     FIELDS_TO_COMPARE = ['session_name', 'presenter_name']
 
-    def __init__(self, common_config):
-        super().__init__(common_config)
+    def __init__(self):
+        super().__init__()
         self.load_schedule_and_events()
 
     def load_schedule_and_events(self):

@@ -15,10 +15,9 @@ class GoogleSheet(GoogleService):
         super().__init__(settings)
 
     def create_service(self, creds):
-        delegated_creds = creds.with_subject(self.DELEGATED_USER)
         return build('sheets',
                      'v4',
-                     credentials=delegated_creds,
+                     credentials=creds,
                      cache_discovery=False)
 
     def read(self, file_id, range_name):

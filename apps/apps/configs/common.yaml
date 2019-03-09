@@ -3,5 +3,10 @@ google:
     scopes:
         - https://www.googleapis.com/auth/gmail.compose
         - https://www.googleapis.com/auth/drive
-
-
+        - https://www.googleapis.com/auth/photoslibrary
+mongo:
+    username: root
+    password: root@m0vefast
+    host: 127.0.0.1
+    port: 27017
+    database: octopus

@@ -8,7 +8,8 @@ class GoogleService:
 
     def __init__(self, settings):
         creds = self.load_creds(settings)
-        self.service = self.create_service(creds)
+        delegated_creds = creds.with_subject(self.DELEGATED_USER)
+        self.service = self.create_service(delegated_creds)
 
     def create_service(self, creds):
         raise("Not Implemented")
