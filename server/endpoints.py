@@ -7,17 +7,17 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+
 @app.route("/events", methods=["GET"])
 @login_required
 def index():
  return json_response(Kudo(g.user).find_all_kudos())
 
 
-@app.route("/kudo/<int:repo_id>", methods=["GET"])
+@app.route("/event/<event_id>", methods=["GET"])
 @login_required
 def show(repo_id):
  kudo = Kudo(g.user).find_kudo(repo_id)
-
  if kudo:
    return json_response(kudo)
  else:

@@ -2,7 +2,6 @@
 
 import re
 import requests
-from pprint import pprint
 
 
 class Meetup:
