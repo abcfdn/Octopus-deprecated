@@ -1,25 +1,51 @@
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, validates
 
-EVENT_FIELDS = [
-    "start_time", "duration", "site", "address", "location",
-    "meetup", "eventbrite", "livestream", "session_id",
-    "presenter_id", "project_id"]
 
-PRESENTER_FIELDS = [
-    "full_name", "email", "title", "company",
-    "linkedin", "self_intro", "avatar"]
+class ProjectSchema(Schema):
+    name = fields.Str(required=True)
+    website = fields.Url()
+    short_description = fields.Str()
+    long_description = fields.Str()
+    team_background = fields.Str()
+    github = fields.Url()
+    logo = fields.Url()
+    focused_area = fields.Str()
 
-PROJECT_FIELDS = [
-    "name", "website", "short_description", "long_description",
-    "github", "logo", "focused_area"]
 
-SESSION_FIELDS = [
-    "session_name", "topic", "category", "event_type", "language",
-    "summary", "highlight", "pre_requisite", "deck_file"]
+class PresenterSchema(Schema):
+    email = fields.Email(required=True)
+    full_name = fields.Str()
+    title = fields.Str()
+    orgnization = fields.Str()
+    linkedin = fields.Url()
+    self_intro = fields.Str()
+    photo = fields.Url()
+    project = fields.Nested(ProjectSchema)
+
+
+class TopicSchema(Schema):
+    name = fields.Str()
+    sessions = fields.List(fields.Str())
+    poster = fields.Url()
+
+
+class SessionScheduleSchema(Schema):
+    start_at = fields.Int()
+    duration_as_mins = fields.Int()
+    site = fields.Str()
+    address = fields.Str()
+    location = fields.Str()
+    meetup = fields.Url()
+    eventbrite = fields.Url()
+    livestream = fields.Url()
+    poster = fields.Url()
 
 
 class SessionSchema(Schema):
     name = fields.Str(required=True)
+    presenter = fields.Email()
+    created_at = fields.Int()
+
     topic = fields.Str()
     category = fields.Str()
     event_type = fields.Str()
@@ -28,45 +54,9 @@ class SessionSchema(Schema):
     highlight = fields.Str()
     pre_requisite = fields.Str()
     deck_file = fields.Url()
+    schedule = fields.Nested(ScheduleSchema)
 
     @validates('language')
     def validate_language(self, value):
-        if language not in ['english', 'chinese']:
-            raise ValidationError('Only chinese and english are supported..')
-
-
-class ProjectSchema(Schema):
-    name = fields.Str(required=True)
-    website = fields.Url()
-    short_description = fields.Str()
-    long_description = fields.Str()
-    github = fields.Url()
-    logo = fields.Url()
-    focused_area = fields.List()
-
-
-class PresenterSchema(Schema):
-    user_id = fields.Email(required=True)
-    full_name = fields.Str()
-    email = fields.Email()
-    title = fields.Str()
-    company = fields.Str()
-    linkedin = fields.Url()
-    self_intro = fields.Str()
-    avatar = fields.Url()
-
-
-class EventSchema(Schema):
-    id = fields.UUID()
-    session_id = fields.Str()
-    project_id = fields.Str()
-    project_id = fields.Str()
-    date = fields.Date()
-    start_at = fields.Time()
-    duration_as_hours = fields.Float()
-    site = fields.Str()
-    address = fields.Str()
-    location = fields.Str()
-    meetup = fields.Url()
-    eventbrite = fields.Url()
-    livestream = fields.Url()
+        if language.lower() not in ['english', 'chinese']:
+            raise ValidationError('Only Chinese and English are supported..')

@@ -2,8 +2,8 @@
 
 import os
 
-from toolset.google.drive import GoogleDrive
-import toolset.utils.util as util
+from platform.google.drive import GoogleDrive
+import platform.utils.util as util
 
 from constants import CONFIG_ROOT_PATH
 from constants import TASK_CONFIG_ROOT_PATH

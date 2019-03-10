@@ -1,0 +1,57 @@
+google:
+    creds_file: /root/credentials/decom-231205-88f320bc9297.json
+    scopes:
+        - https://www.googleapis.com/auth/gmail.compose
+        - https://www.googleapis.com/auth/drive
+        - https://www.googleapis.com/auth/photoslibrary
+mongo:
+    username: root
+    password: root@m0vefast
+    host: 127.0.0.1
+    port: 27017
+    database: octopus
+data:
+    schedule:
+        remote: 1qWTjaUDtrAHYKqyu1aZoSR3yVK2LHFEap1WgfgcSX6c
+    event:
+        remote: 1HfkCbPD9ROydGo5vjgPiSUTP4sU-AFnprvdXcpqGlDc
+fields:
+    presenter:
+        email_address: email
+        presenter_email: email
+        presenter_name: full_name
+        company/organization: orgnization
+        title: title
+        linkedin: linkedin
+        self-introduction: self_intro
+        photo: photo
+    project:
+        project_name: name
+        website: website
+        short_description: short_description
+        detailed_description: long_description
+        team_background: team_background
+        github_link: github
+        project_logo: logo
+        focused_area: focused_area
+    session:
+        session_name: name
+        event_type: event_type
+        created_at: created_at
+        language: language
+        duration_as_mins: duration_as_mins
+        summary: summary
+        highlight: highlight
+        pre-requisite: pre-requisite
+        deck_file_link: deck_file
+        deck_file: deck_file
+    session_schedule:
+        start_at: start_at
+        duration_as_mins: duration_as_mins
+        site: site
+        address1: address
+        address2: location
+        meetup: meetup
+        eventbrite: eventbrite
+        livestream: livestream
+        poster: poster
