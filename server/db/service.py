@@ -3,7 +3,7 @@
 from datetime import datetime
 
 from .schema import SessionSchema, PresenterSchema
-from .mongo import PresenterStore, SessionStore
+from .mongo import MongoConnection, PresenterStore, SessionStore
 
 class Service(object):
     def __init__(self, config):
@@ -14,8 +14,8 @@ class Service(object):
     def get_sessions(self, start_time, end_time):
         selector = {
             '$and': [
-                {'schedule': {'start_at': {'$gte': start_time}},
-                {'schedule': {'start_at': {'$lte': end_time}},
+                {'schedule.start_at': {'$gte': start_time}},
+                {'schedule.start_at': {'$lte': end_time}}
             ]
         }
         sessions = self.session_store.find_all(selector)
@@ -24,16 +24,16 @@ class Service(object):
     def get_past_sessions(self):
         end_time = int(datetime.now().timestamp())
         start_time = end_time - 15552000 # 180 days
-        return get_session(start_time, end_time)
+        return self.get_sessions(start_time, end_time)
 
     def get_future_sessions(self):
         start_time = int(datetime.now().timestamp())
         end_time = start_time + 15552000 # 180 days
-        return get_session(start_time, end_time)
+        return self.get_sessions(start_time, end_time)
 
     def get_recent_sessions(self):
         now = int(datetime.now().timestamp())
-        return get_session(now - 2592000, now + 2592000)
+        return self.get_sessions(now - 2592000, now + 2592000)
 
     def get_session(self, created_at):
         sesssion = self.session_store.find_all({'created_at': created_at})

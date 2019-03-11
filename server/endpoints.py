@@ -1,3 +1,7 @@
+# -*- encoding: UTF-8 -*-
+
+import os
+
 from .middlewares import login_required
 from flask import Flask, json, g, request
 from db.service import Service
