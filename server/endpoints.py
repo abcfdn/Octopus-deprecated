@@ -34,3 +34,6 @@ def show(created_at):
 @login_required
 def presenter(username):
     return json_response(Service(config['mongo']).get_presenter(username))
+
+def json_response(payload, status=200):
+    return (json.dumps(payload), status, {'content-type': 'application/json'})

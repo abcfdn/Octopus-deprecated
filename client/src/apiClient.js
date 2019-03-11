@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URI = 'http://localhost:4433';
+const BASE_URI = 'http://206.189.161.176:4433';
 
 const client = axios.create({
    baseURL: BASE_URI,

@@ -41,7 +41,7 @@ class Service(object):
 
     def get_presenter(self, email):
         presenter = self.presenter_store.find({'email': email})
-        return self.dump_presenter(self, data)
+        return self.dump_presenter(presenter)
 
     def dump_session(self, data):
        return SessionSchema(exclude=['_id']).dump(data).data

@@ -38,7 +38,7 @@ class Home extends React.Component {
   renderSessions = (sessions) => {
     if (sessions.length) {
       return sessions.map((session) =>
-        <ExpansionPanel>
+        <ExpansionPanel key={session.created_at}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             <Typography className={styles.heading}>{session.name}</Typography>
           </ExpansionPanelSummary>

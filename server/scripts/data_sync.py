@@ -102,6 +102,7 @@ class DataSync:
     def sync_one(self, event):
         project = self.transform_one('project', event)
         presenter = self.transform_one('presenter', event)
+        presenter['project'] = project
         self.compare_and_update(
             presenter,
             {
