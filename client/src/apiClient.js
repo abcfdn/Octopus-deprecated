@@ -12,8 +12,13 @@ class APIClient {
     this.accessToken = accessToken;
   }
 
-  getEvents() {
-    return this.perform('get', '/events');
+  getSessions() {
+    return this.perform('get', '/sessions');
+  }
+
+  getPresenter(username) {
+    return this.perform(
+      'get', '/presenter/' + encodeURIComponent(username));
   }
 
   async perform(method, resource, data) {

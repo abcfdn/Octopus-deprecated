@@ -15,6 +15,7 @@ from server.db.mongo import MongoConnection, SessionStore, PresenterStore
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(ROOT_DIR, 'config.yaml')
+COMMON_CONFIG_PATH = os.path.join(ROOT_DIR, '../config.yaml')
 
 FORMAT = '%(asctime)s %(levelname)s %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -149,6 +150,8 @@ class DataSync:
 
 def main():
     config = util.load_yaml(CONFIG_PATH)
+    common_config = util.load_yaml(COMMON_CONFIG_PATH)
+    config.update(common_config)
     entry = DataSync(config)
     entry.sync()
 

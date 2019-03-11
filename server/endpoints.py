@@ -1,25 +1,32 @@
 from .middlewares import login_required
 from flask import Flask, json, g, request
-from app.kudo.service import Service as Kudo
-from app.kudo.schema import GithubRepoSchema
+from db.service import Service
 from flask_cors import CORS
+
+import server.platforms.utils.util as util
 
 app = Flask(__name__)
 CORS(app)
 
 
-@app.route("/events", methods=["GET"])
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_PATH = os.path.join(ROOT_DIR, 'config.yaml')
+config = util.load_yaml(CONFIG_PATH)
+
+
+@app.route("/sessions", methods=["GET"])
 @login_required
 def index():
- return json_response(Kudo(g.user).find_all_kudos())
+    return json_response(Service(config['mongo']).get_recent_sessions())
 
 
-@app.route("/event/<event_id>", methods=["GET"])
+@app.route("/session/<int:created_at>", methods=["GET"])
 @login_required
-def show(repo_id):
- kudo = Kudo(g.user).find_kudo(repo_id)
- if kudo:
-   return json_response(kudo)
- else:
-   return json_response({'error': 'kudo not found'}, 404)
+def show(created_at):
+    return json_response(Service(config['mongo']).get_session(created_at))
 
+
+@app.route("/presenter/<username>", methods=["GET"])
+@login_required
+def presenter(username):
+    return json_response(Service(config['mongo']).get_presenter(username))

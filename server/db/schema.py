@@ -29,7 +29,7 @@ class TopicSchema(Schema):
     poster = fields.Url()
 
 
-class SessionScheduleSchema(Schema):
+class ScheduleSchema(Schema):
     start_at = fields.Int()
     duration_as_mins = fields.Int()
     site = fields.Str()
