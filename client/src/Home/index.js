@@ -27,6 +27,11 @@ const styles = theme => ({
 });
 
 class Home extends React.Component {
+  constructor(props) {
+    super(props);
+    this.logout = this.logout.bind(this);
+  }
+
   state = {
     sessions: [],
     refreshed: true,
@@ -48,6 +53,11 @@ class Home extends React.Component {
         this.setState({...this.state, refreshed: true})
       });
     });
+  }
+
+  async logout(e) {
+    e.preventDefault();
+    this.props.auth.logout('/');
   }
 
   renderTipText = () => {
@@ -75,6 +85,7 @@ class Home extends React.Component {
   render() {
     return (
       <div className={styles.root}>
+        <Button onClick={this.logout} color="inherit">Logout</Button>
         <Button
          disabled={!this.state.refreshed}
          variant="contained"
