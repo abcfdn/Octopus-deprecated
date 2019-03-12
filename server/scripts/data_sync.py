@@ -15,7 +15,6 @@ from server.db.mongo import MongoConnection, SessionStore, PresenterStore
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(ROOT_DIR, 'config.yaml')
-COMMON_CONFIG_PATH = os.path.join(ROOT_DIR, '../config.yaml')
 
 FORMAT = '%(asctime)s %(levelname)s %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -48,8 +47,10 @@ class DataSync:
     NUM_OF_ROWS_TO_READ = 1000
     FIELDS_TO_COMPARE = ['session_name', 'presenter_name']
 
-    def __init__(self, config):
-        self.config = config
+    def __init__(self, common_config):
+        self.config = util.load_yaml(CONFIG_PATH)
+        self.config.update(common_config)
+
         self.sheet_service = GoogleSheet(self.config['google'])
         self.load_events()
         self.load_schedules()
@@ -147,15 +148,3 @@ class DataSync:
             for src, dst in self.config['fields'][coll].items()
             if (src in doc and doc[src])
         }
-
-
-def main():
-    config = util.load_yaml(CONFIG_PATH)
-    common_config = util.load_yaml(COMMON_CONFIG_PATH)
-    config.update(common_config)
-    entry = DataSync(config)
-    entry.sync()
-
-
-if __name__ == '__main__':
-    main()

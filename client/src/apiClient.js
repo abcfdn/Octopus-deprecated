@@ -16,9 +16,17 @@ class APIClient {
     return this.perform('get', '/sessions');
   }
 
+  getSession(session_id) {
+    return this.perform('get', '/session/' + session_id);
+  }
+
   getPresenter(username) {
     return this.perform(
       'get', '/presenter/' + encodeURIComponent(username));
+  }
+
+  refresh() {
+    return this.perform('post', '/refresh');
   }
 
   async perform(method, resource, data) {

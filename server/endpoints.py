@@ -8,6 +8,7 @@ from db.service import Service
 from flask_cors import CORS
 
 import server.platforms.utils.util as util
+from server.scripts.data_sync import DataSync
 
 app = Flask(__name__)
 CORS(app)
@@ -16,6 +17,13 @@ CORS(app)
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(ROOT_DIR, 'config.yaml')
 config = util.load_yaml(CONFIG_PATH)
+
+
+@app.route("/refresh", methods=["POST"])
+@login_required
+def refresh():
+    DataSync(config).sync()
+    return json_response({'success': True})
 
 
 @app.route("/sessions", methods=["GET"])
@@ -34,6 +42,7 @@ def show(created_at):
 @login_required
 def presenter(username):
     return json_response(Service(config['mongo']).get_presenter(username))
+
 
 def json_response(payload, status=200):
     return (json.dumps(payload), status, {'content-type': 'application/json'})

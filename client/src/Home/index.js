@@ -8,9 +8,10 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Button from '@material-ui/core/Button';
 
 import APIClient from '../apiClient'
-import Session from '../Session'
+import SessionDetail from '../SessionDetail'
 
 const styles = theme => ({
   root: {
@@ -20,11 +21,15 @@ const styles = theme => ({
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
   },
+  button: {
+    margin: theme.spacing.unit,
+  },
 });
 
 class Home extends React.Component {
   state = {
     sessions: [],
+    refreshed: true,
   };
 
   async componentDidMount() {
@@ -35,7 +40,22 @@ class Home extends React.Component {
     });
   }
 
-  renderSessions = (sessions) => {
+  handleClick = () => {
+    this.setState({...this.state, refreshed: false})
+    this.props.auth.getAccessToken().then((token) => {
+      this.apiClient = new APIClient(token);
+      this.apiClient.refresh().then((data) => {
+        this.setState({...this.state, refreshed: true})
+      });
+    });
+  }
+
+  renderTipText = () => {
+    var text = this.state.refreshed ? 'Synced' : 'Syncing';
+    return <Typography className={styles.heading}>{text}</Typography>
+  }
+
+  renderSessionList = (sessions) => {
     if (sessions.length) {
       return sessions.map((session) =>
         <ExpansionPanel key={session.created_at}>
@@ -43,7 +63,7 @@ class Home extends React.Component {
             <Typography className={styles.heading}>{session.name}</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <Session session={session} />
+            <SessionDetail session={session} />
           </ExpansionPanelDetails>
         </ExpansionPanel>
       );
@@ -55,7 +75,16 @@ class Home extends React.Component {
   render() {
     return (
       <div className={styles.root}>
-        {this.renderSessions(this.state.sessions)}
+        <Button
+         disabled={!this.state.refreshed}
+         variant="contained"
+         color="primary"
+         onClick={this.handleClick}
+         className={styles.button}>
+          Sync
+        </Button>
+        {this.renderTipText()}
+        {this.renderSessionList(this.state.sessions)}
       </div>
     );
   }

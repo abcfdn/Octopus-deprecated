@@ -36,7 +36,7 @@ class Service(object):
         return self.get_sessions(now - 2592000, now + 2592000)
 
     def get_session(self, created_at):
-        sesssion = self.session_store.find_all({'created_at': created_at})
+        session = self.session_store.find({'created_at': created_at})
         return self.dump_session(session)
 
     def get_presenter(self, email):

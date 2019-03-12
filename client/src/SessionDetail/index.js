@@ -2,11 +2,11 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
 import { withStyles } from '@material-ui/core/styles';
-import { withAuth } from '@okta/okta-react';
-
 import Paper from '@material-ui/core/Paper';
 
-import SessionDetail from '../SessionDetail'
+import { withAuth } from '@okta/okta-react';
+import Link from '@material-ui/core/Button';
+
 import APIClient from '../apiClient'
 import MarkdownUtil from '../util'
 
@@ -20,33 +20,34 @@ const styles = theme => ({
 });
 
 
-class Session extends React.Component {
+class SessionDetail extends React.Component {
   state = {
-    session: {},
     presenter: {},
   };
 
   async componentDidMount() {
-    const accessToken = await this.props.auth.getAccessToken();
-    const session_id = this.props.match.params.session_id;
+    const accessToken = await this.props.auth.getAccessToken()
     this.apiClient = new APIClient(accessToken);
-    this.apiClient.getSession(session_id).then((data) => {
-      this.setState({...this.state, session: data});
-      this.apiClient.getPresenter(data.presenter).then((data) =>
+    this.apiClient.getPresenter(
+      this.props.session.presenter).then((data) =>
         this.setState({...this.state, presenter: data})
       );
-    });
   }
 
   render() {
     const { classes } = this.props;
     const markdownUtil = new MarkdownUtil();
+    var sessionPath = "/session/" + this.props.session.created_at;
     return (
       <div>
         <Paper className={classes.root} elevation={1}>
+           <Link to={sessionPath}>
+             Publish
+           </Link>
+
           <ReactMarkdown
             source={markdownUtil.composeInput(
-              this.state.session, this.state.presenter)}
+              this.props.session, this.state.presenter)}
           />
         </Paper>
       </div>
@@ -54,4 +55,4 @@ class Session extends React.Component {
   }
 }
 
-export default withStyles(styles)(withAuth(Session));
+export default withStyles(styles)(withAuth(SessionDetail));
