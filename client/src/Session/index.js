@@ -6,9 +6,9 @@ import { withAuth } from '@okta/okta-react';
 
 import Paper from '@material-ui/core/Paper';
 
-import SessionDetail from '../SessionDetail'
 import APIClient from '../apiClient'
 import MarkdownUtil from '../util'
+import Link from 'react-router-dom/Link';
 
 const styles = theme => ({
   root: {
@@ -43,6 +43,10 @@ class Session extends React.Component {
     const markdownUtil = new MarkdownUtil();
     return (
       <div>
+        <Link to='/'>
+          Back
+        </Link>
+
         <Paper className={classes.root} elevation={1}>
           <ReactMarkdown
             source={markdownUtil.composeInput(

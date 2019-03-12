@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 
 import { withAuth } from '@okta/okta-react';
-import Link from '@material-ui/core/Button';
+import Link from 'react-router-dom/Link';
 
 import APIClient from '../apiClient'
 import MarkdownUtil from '../util'
