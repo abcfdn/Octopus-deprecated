@@ -2,15 +2,14 @@
 
 import os
 
-from platform.google.drive import GoogleDrive
-import platform.utils.util as util
+from server.platforms.google.drive import GoogleDrive
+import server.platforms.utils.util as util
 
-from constants import CONFIG_ROOT_PATH
-from constants import TASK_CONFIG_ROOT_PATH
+from .constants import CONFIG_ROOT_PATH, TASK_CONFIG_ROOT_PATH
 
 
 class ResourceBase:
-    def __init__(self, google_config, data_config):
+    def __init__(self, google_creds, data_config):
         self.drive_service = GoogleDrive(google_config)
         self.sync_to_local(data_config)
 
@@ -24,9 +23,9 @@ class ResourceBase:
 
 
 class Task(ResourceBase):
-    def __init__(self):
+    def __init__(self, google_creds):
         self.config = self.load_config()
-        super().__init__(self.config['google'], self.config['data'])
+        super().__init__(google_creds, self.config['data'])
 
     def load_common_config(self):
         common_config_file = os.path.join(CONFIG_ROOT_PATH, 'common.yaml')

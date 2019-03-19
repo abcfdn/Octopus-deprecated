@@ -2,14 +2,15 @@
 
 from datetime import datetime
 
-from .schema import SessionSchema, PresenterSchema
-from .mongo import MongoConnection, PresenterStore, SessionStore
+from .schema import SessionSchema, PresenterSchema, PictureSchema
+from .mongo import MongoConnection, PresenterStore, SessionStore, PictureStore
 
 class Service(object):
     def __init__(self, config):
         conn = MongoConnection(config)
         self.session_store = SessionStore(conn)
         self.presenter_store = PresenterStore(conn)
+        self.picture_store = PictureStore(conn)
 
     def get_sessions(self, start_time, end_time):
         selector = {
@@ -43,8 +44,18 @@ class Service(object):
         presenter = self.presenter_store.find({'email': email})
         return self.dump_presenter(presenter)
 
+    def store_picture(self, data):
+        return self.picture_store.create(self.dump_picture(data))
+
+    def get_picture(self, photo_id):
+        picture = self.picture_store.find({'photo_id': photo_id})
+        return self.dump_picture(picture)
+
     def dump_session(self, data):
        return SessionSchema(exclude=['_id']).dump(data).data
 
     def dump_presenter(self, data):
        return PresenterSchema(exclude=['_id']).dump(data).data
+
+    def dump_picture(self, data):
+       return PictureSchema(exclude=['_id']).dump(data).data

@@ -14,8 +14,8 @@ logger = logging.getLogger('google_drive')
 
 
 class GoogleDrive(GoogleService):
-    def __init__(self, settings):
-        super().__init__(settings)
+    def __init__(self, google_creds):
+        super().__init__(google_creds)
 
     def create_service(self, creds):
         return build('drive',

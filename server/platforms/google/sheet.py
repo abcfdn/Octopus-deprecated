@@ -11,8 +11,8 @@ logger = logging.getLogger('google_sheet')
 class GoogleSheet(GoogleService):
     HEADER_RANGE = "{}!1:1"
 
-    def __init__(self, settings):
-        super().__init__(settings)
+    def __init__(self, google_creds):
+        super().__init__(google_creds)
 
     def create_service(self, creds):
         return build('sheets',

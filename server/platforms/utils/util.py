@@ -4,6 +4,8 @@ import os
 import yaml
 import csv
 
+import dateparser
+
 def create_if_not_exist(dir_name):
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
@@ -40,3 +42,28 @@ def deepmerge(source, dest):
         else:
             dest[key] = value
     return dest
+
+def duration_as_mins(duration):
+    for i,c in enumerate(duration):
+        if not c.isdigit():
+            break
+    number=int(duration[:i])
+    unit=duration[i:].strip().lower()
+
+    if unit == 'h' or unit.startswith('hour'):
+        return number * 60
+    elif unit == 'm' or unit.startswith('min'):
+        return number
+    elif unit == 's' or unit.startswith('sec'):
+        return number / 60
+    elif unit == 'd' or unit.startswith('day'):
+        return number * 60 * 24
+    else:
+        logger.warning('Unrecognized duration')
+        return -1
+
+def to_epoch_time(time):
+    return (int)(dateparser.parse(time).timestamp())
+
+def duration_as_sec(duration):
+    return duration_as_mins(duration) * 60

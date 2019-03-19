@@ -5,7 +5,6 @@ import sys
 sys.path.append("..")
 
 import logging
-import dateparser
 
 from bson.objectid import ObjectId
 
@@ -20,28 +19,6 @@ FORMAT = '%(asctime)s %(levelname)s %(message)s'
 logging.basicConfig(format=FORMAT)
 logger = logging.getLogger('app')
 
-
-def duration_as_mins(duration):
-    for i,c in enumerate(duration):
-        if not c.isdigit():
-            break
-    number=int(duration[:i])
-    unit=duration[i:].strip().lower()
-
-    if unit == 'h' or unit.startswith('hour'):
-        return number * 60
-    elif unit == 'm' or unit.startswith('min'):
-        return number
-    elif unit == 's' or unit.startswith('sec'):
-        return number / 60
-    elif unit == 'd' or unit.startswith('day'):
-        return number * 60 * 24
-    else:
-        logger.warning('Unrecognized duration')
-        return -1
-
-def to_epoch_time(time):
-    return (int)(dateparser.parse(time).timestamp())
 
 class DataSync:
     NUM_OF_ROWS_TO_READ = 1000
@@ -60,15 +37,15 @@ class DataSync:
         self.presenter_store = PresenterStore(conn)
 
     def preprocess_event(self, event):
-        event['duration_as_mins'] = duration_as_mins(
+        event['duration_as_mins'] = util.duration_as_mins(
             event['duration'])
-        event['created_at'] = to_epoch_time(event['timestamp'])
+        event['created_at'] = util.to_epoch_time(event['timestamp'])
 
     def preprocess_schedule(self, schedule):
         date_time = '{} {} PST'.format(
             schedule['date'], schedule['start_time'])
         schedule['start_at'] = to_epoch_time(date_time)
-        schedule['duration_as_mins'] = duration_as_mins(
+        schedule['duration_as_mins'] = util.duration_as_mins(
             schedule['duration'])
 
     def compare_and_update(self, updated, selector, mongo_store):

@@ -3,9 +3,9 @@
 import os
 import logging
 
-from toolset.image.composer import ImageComposer, ImagePiece
-from toolset.google.sheet import GoogleSheet
-import toolset.utils.util as util
+from server.platforms.image.composer import ImageComposer, ImagePiece
+from server.platforms.google.sheet import GoogleSheet
+import server.platforms.utils.util as util
 
 from apps.base import Task
 from .poster_base import WhitepaperJournalPosterBase

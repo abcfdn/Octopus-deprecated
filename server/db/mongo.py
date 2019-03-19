@@ -58,3 +58,7 @@ class PresenterStore(MongoStore):
 class TopicStore(MongoStore):
     def get_coll_name(self):
         return "topic"
+
+class PictureStore(MongoStore):
+    def get_coll_name(self):
+        return "pictures"

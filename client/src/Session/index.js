@@ -5,10 +5,11 @@ import { withStyles } from '@material-ui/core/styles';
 import { withAuth } from '@okta/okta-react';
 
 import Paper from '@material-ui/core/Paper';
+import Link from 'react-router-dom/Link';
 
 import APIClient from '../apiClient'
 import MarkdownUtil from '../util'
-import Link from 'react-router-dom/Link';
+import Schedule from '../Schedule';
 
 const styles = theme => ({
   root: {
@@ -48,6 +49,7 @@ class Session extends React.Component {
         </Link>
 
         <Paper className={classes.root} elevation={1}>
+          <Schedule schedule={this.state.session.schedule}/>
           <ReactMarkdown
             source={markdownUtil.composeInput(
               this.state.session, this.state.presenter)}

@@ -5,8 +5,8 @@ import logging
 
 from datetime import datetime
 
-from toolset.image.composer import ImageComposer, ImagePiece
-import toolset.utils.util as util
+from server.platforms.image.composer import ImageComposer, ImagePiece
+import server.platforms.utils.util as util
 from .base import WhitepaperJournalBase
 
 
@@ -16,8 +16,8 @@ IMG_MIME = 'image/jpeg'
 class WhitepaperJournalPosterBase(WhitepaperJournalBase):
     NUM_OF_ROWS_TO_READ = 1000
 
-    def __init__(self, common_config):
-        super().__init__(common_config)
+    def __init__(self, google_creds):
+        super().__init__(google_creds)
         self.txt_style = self.config['txt_style']
         self.img_style = self.config['img_style']
 
@@ -38,15 +38,16 @@ class WhitepaperJournalPosterBase(WhitepaperJournalBase):
         logo_img.to_thumbnail(tuple(self.img_style['logo']['size']))
         return logo_img
 
-    def get_logo(self, event):
-        project_name = event['project_name'].strip()
-        logo_img = self.get_logo_by_project(project_name)
-        if logo_img:
-            return logo_img
+    def get_logo(self, project):
+        if not project.logo:
+            project_name = project.name.strip()
+            logo_img = self.get_logo_by_project(project_name)
+            if logo_img:
+                return logo_img
 
         logo_dir = self.config['data']['logo']['local']
         origin_path = self.drive_service.download_from_url(
-            event['project_logo'], logo_dir)
+                project.logo, logo_dir)
         ext = os.path.splitext(origin_path)[1]
         newpath = os.path.join(logo_dir, project_name + ext)
         os.rename(origin_path, newpath)
@@ -61,15 +62,16 @@ class WhitepaperJournalPosterBase(WhitepaperJournalBase):
         avatar_img.to_circle_thumbnail(tuple(self.img_style['avatar']['size']))
         return avatar_img
 
-    def get_avatar(self, event):
-        name = event['presenter_name'].strip()
-        avatar_img = self.get_avatar_by_name(name)
-        if avatar_img:
-            return avatar_img
+    def get_avatar(self, presenter):
+        if not presenter.photo:
+            name = presenter.full_name.strip()
+            avatar_img = self.get_avatar_by_name(name)
+            if avatar_img:
+                return avatar_img
 
         avatar_dir = self.config['data']['avatar']['local']
         origin_path = self.drive_service.download_from_url(
-            event['photo'], avatar_dir)
+            presenter.photo, avatar_dir)
         ext = os.path.splitext(origin_path)[1]
         newpath = os.path.join(avatar_dir, name + ext)
         os.rename(origin_path, newpath)

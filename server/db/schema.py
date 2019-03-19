@@ -60,3 +60,23 @@ class SessionSchema(Schema):
     def validate_language(self, value):
         if language.lower() not in ['english', 'chinese']:
             raise ValidationError('Only Chinese and English are supported..')
+
+class PictureSchema(Schema):
+    photo_id = fields.Str(required=True)
+    name = fields.Str()
+    description = fields.Str()
+    product_url = fields.Url()
+    base_url = fields.Url()
+    mime_type = fields.Str()
+    photo_type = fields.Str()
+    created_at = fields.Int()
+    height = fields.Int()
+    width = fields.Int()
+
+    @validates('photo_type')
+    def validate_photo_type(self, value):
+        if photo_type.lower() not in ['event_poster',
+                                      'topic_poster',
+                                      'membership_card',
+                                      'others']:
+            raise ValidationError('Unsupported photo type')

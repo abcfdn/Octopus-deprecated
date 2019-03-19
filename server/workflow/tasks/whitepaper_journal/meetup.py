@@ -4,8 +4,8 @@ import os
 import logging
 
 from datetime import timedelta, timezone
-from toolset.meetup import Meetup
-import toolset.utils.util as util
+from server.platforms.meetup import Meetup
+import server.platforms.utils.util as util
 from .base import WhitepaperJournalBase
 
 logger = logging.getLogger('whitepaper_journal_meetup')

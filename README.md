@@ -1,4 +1,4 @@
-# Octopus (章鱼烧)
+ #Octopus (章鱼烧)
 
 ## Motivation
 [![Build Status/.org](https://travis-ci.org/abcfdn/Octopus.svg?branch=master)](https://travis-ci.org/abcfdn/Octopus)
@@ -55,3 +55,14 @@ Image
 ### Facebook Page
 
 ### Slack
+
+## Runbook
+
+Start Mongo
+```
+mongod --dbpath /root/data/mongodb --auth --port 27017
+
+FLASK_APP=$PWD/app/http/api/endpoints.py FLASK_ENV=development pipenv run python -m flask run --port 4433 --host 0.0.0.0
+
+npm start
+```
