@@ -62,3 +62,7 @@ class TopicStore(MongoStore):
 class PictureStore(MongoStore):
     def get_coll_name(self):
         return "pictures"
+
+class CredentialStore(MongoStore):
+    def get_coll_name(self):
+        return "google_credentials"

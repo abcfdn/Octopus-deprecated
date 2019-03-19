@@ -6,6 +6,7 @@ import logging
 from datetime import datetime
 
 from server.platforms.image.composer import ImageComposer, ImagePiece
+from server.platforms.google.photo import GooglePhoto
 import server.platforms.utils.util as util
 from .base import WhitepaperJournalBase
 
@@ -20,6 +21,7 @@ class WhitepaperJournalPosterBase(WhitepaperJournalBase):
         super().__init__(google_creds)
         self.txt_style = self.config['txt_style']
         self.img_style = self.config['img_style']
+        self.photo_service = GooglePhoto(google_creds)
 
     def get_common_template(self, basename):
         template_dir = self.config['data']['common_template']['local']
@@ -39,15 +41,15 @@ class WhitepaperJournalPosterBase(WhitepaperJournalBase):
         return logo_img
 
     def get_logo(self, project):
-        if not project.logo:
-            project_name = project.name.strip()
+        project_name = project['name'].strip()
+        if 'logo' not in project:
             logo_img = self.get_logo_by_project(project_name)
             if logo_img:
                 return logo_img
 
         logo_dir = self.config['data']['logo']['local']
         origin_path = self.drive_service.download_from_url(
-                project.logo, logo_dir)
+                project['logo'], logo_dir)
         ext = os.path.splitext(origin_path)[1]
         newpath = os.path.join(logo_dir, project_name + ext)
         os.rename(origin_path, newpath)
@@ -63,15 +65,15 @@ class WhitepaperJournalPosterBase(WhitepaperJournalBase):
         return avatar_img
 
     def get_avatar(self, presenter):
-        if not presenter.photo:
-            name = presenter.full_name.strip()
+        name = presenter['full_name'].strip()
+        if 'photo' not in presenter:
             avatar_img = self.get_avatar_by_name(name)
             if avatar_img:
                 return avatar_img
 
         avatar_dir = self.config['data']['avatar']['local']
         origin_path = self.drive_service.download_from_url(
-            presenter.photo, avatar_dir)
+            presenter['photo'], avatar_dir)
         ext = os.path.splitext(origin_path)[1]
         newpath = os.path.join(avatar_dir, name + ext)
         os.rename(origin_path, newpath)
@@ -80,7 +82,7 @@ class WhitepaperJournalPosterBase(WhitepaperJournalBase):
     def draw_text(self, img, lines, settings):
         font = img.get_font(self.config['data']['font']['local'],
                             settings['font'])
-        img.draw_text(lines, font, settings)
+        return img.draw_text(lines, font, settings)
 
     def save(self, composer, filename=None, upload=True):
         if not filename:
@@ -90,8 +92,7 @@ class WhitepaperJournalPosterBase(WhitepaperJournalBase):
         filepath = os.path.join(output_dir['local'], filename + '.png')
         composer.save(filepath)
         if upload:
-            self.drive_service.upload_file(
-                    filepath, IMG_MIME, output_dir['remote'])
+            self.photo_service.create_item(output_dir['remote'], filepath)
 
     def reset(self):
         raise('Not Implemented')

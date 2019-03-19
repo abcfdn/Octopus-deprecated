@@ -94,6 +94,12 @@ class ImagePiece:
                                        gap)
                     y_pos += (h + gap[1])
                 y_pos += p_gap
+        return y_pos
+
+    def crop_bottom(self, y_pos):
+        width, height = self.img.size
+        if y_pos < height:
+            self.img = self.img.crop((0, 0, width, y_pos))
 
     def crop_to_square(self):
         width, height = self.img.size
@@ -102,7 +108,7 @@ class ImagePiece:
         top = (height - new_length)/2
         right = (width + new_length)/2
         bottom = (height + new_length)/2
-        self.img.crop((left, top, right, bottom))
+        self.img = self.img.crop((left, top, right, bottom))
 
     def to_thumbnail(self, size):
         self.img.thumbnail(size, Image.ANTIALIAS)

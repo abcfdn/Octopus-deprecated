@@ -17,15 +17,8 @@ class WhitepaperJournalTopicPoster(WhitepaperJournalPosterBase):
     TXT_FIELDS = ['datetime', 'session_name', 'presenter_name',
                   'presenter_title']
 
-    def __init__(self, common_config):
-        super().__init__(common_config)
-
-    @classmethod
-    def add_parser(cls, parser):
-        topic_poster_parser = parser.add_parser(
-            cls.__name__, help='create whitepaper journal topic poster')
-        group = topic_poster_parser.add_mutually_exclusive_group()
-        group.add_argument('--topics', help='create topic poster, comma separated')
+    def __init__(self, google_creds):
+        super().__init__(google_creds)
 
     def reset(self):
         self.header = self.get_common_template('header.png')
@@ -79,9 +72,9 @@ class WhitepaperJournalTopicPoster(WhitepaperJournalPosterBase):
                         self.img_style['avatar']['align'])
         return composer.to_img_piece()
 
-    def process(self, args):
+    def process(self, topics):
         self.reset()
-        for topic in args.topics.split(','):
+        for topic in topics.split(','):
             self.add_topic(topic)
         self.content.append(self.tail)
         composer = ImageComposer(self.content)

@@ -3,7 +3,6 @@ data:
     remote: 1vV5QEngrsh5x5ZB8PFO1fLtybT19Lf2_
     local: /tmp/abc_apps/whitepaper_journal/event_poster/template/
   output:
-    remote: 17h2O3oDz3zATmqtAgaFRpveRCHMKhz18
     local: /tmp/abc_apps/whitepaper_journal/event_poster/output/
 img_style:
     avatar: # circled thumbnail
@@ -11,7 +10,7 @@ img_style:
         size: [160, 160]
         align: left
     logo:
-        box: [200, 100, 400]
+        box: [200, 20, 400]
         size: [400, 200]
         align: center
 txt_style:
@@ -29,15 +28,15 @@ txt_style:
         align: left
         font:
             type: impact
-            size: 60
+            size: 70
         fill: [219, 232, 252, 255]
     session_summary:
-        box: [90, 350, 640]
-        gap: [2, 5]
+        box: [90, 20, 640]
+        gap: [2, 8]
         align: left
         font:
             type: arial
-            size: 27
+            size: 26
         fill: [219, 232, 252, 255]
     presenter_name:
         box: [420, 60, 400]
@@ -57,19 +56,19 @@ txt_style:
         fill: [144, 159, 184, 255]
     presenter_introduction:
         box: [90, 280, 640]
-        gap: [2, 5]
+        gap: [2, 8]
         align: left
         font:
             type: arial
-            size: 25
+            size: 26
         fill: [219, 232, 252, 255]
     project_description:
-        box: [90, 380, 640]
-        gap: [2, 5]
+        box: [90, 280, 640]
+        gap: [1, 0]
         align: left
         font:
             type: arial
-            size: 25
+            size: 26
         fill: [219, 232, 252, 255]
     datetime:
         box: [167, 50, 500]

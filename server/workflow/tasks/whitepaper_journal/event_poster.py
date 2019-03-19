@@ -3,29 +3,26 @@
 import os
 import logging
 
+import calendar
+from datetime import datetime, timedelta
+import pytz
+
 from server.platforms.image.composer import ImageComposer, ImagePiece
 from server.platforms.google.sheet import GoogleSheet
 import server.platforms.utils.util as util
 
 from server.workflow.base import Task
 from .poster_base import WhitepaperJournalPosterBase
+from pprint import pprint
 
 logger = logging.getLogger('whitepaper_journal_session_poster')
 
 
 class WhitepaperJournalEventPoster(WhitepaperJournalPosterBase):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, google_creds):
+        super().__init__(google_creds)
         self.txt_style = self.config['txt_style']
         self.img_style = self.config['img_style']
-
-    @classmethod
-    def add_parser(cls, parser):
-        session_poster_parser = parser.add_parser(
-            cls.__name__, help='create whitepaper journal session poster')
-        group = session_poster_parser.add_mutually_exclusive_group()
-        group.add_argument('--session',
-                           help='session_id, which is presenter name + date')
 
     def reset(self):
         self.header = self.get_common_template('header.png')
@@ -37,14 +34,14 @@ class WhitepaperJournalEventPoster(WhitepaperJournalPosterBase):
         self.location = self.get_template('location.png')
         self.imgs = [self.header, self.keywords, self.meetup]
 
-    # date=2019/02/21, start_time=7:00pm, duration=2h
     def readable_datetime(self, schedule):
-        start_time = datetime.fromtimestamp(schedule.start_at)
-        date = datetime.strptime(start_time, '%Y/%m/%d')
-        weekday = calendar.day_name[date.weekday()]
-        readable_date = '{}, {}'.format(weekday, date.strftime("%B %d, %Y"))
+        start_time = datetime.fromtimestamp(schedule['start_at'])
+        # UTC to PST
+        start_time = start_time - timedelta(seconds=8*3600)
+        weekday = calendar.day_name[start_time.weekday()]
+        readable_date = '{}, {}'.format(weekday, start_time.strftime("%B %d, %Y"))
 
-        end_time = start_time + timedelta(0, schedule.duration * 60)
+        end_time = start_time + timedelta(0, schedule['duration_as_mins'] * 60)
         readable_time = '{}-{}'.format(start_time.strftime('%I:%M'),
                               end_time.strftime('%I:%M %p'))
         return [readable_date, readable_time]
@@ -55,7 +52,7 @@ class WhitepaperJournalEventPoster(WhitepaperJournalPosterBase):
                        self.txt_style['datetime'])
         self.imgs.append(self.datetime)
 
-        address = [schedule.address1, schedule.location]
+        address = [schedule['address'], schedule['location']]
         self.draw_text(self.location, address, self.txt_style['address'])
         self.imgs.append(self.location)
 
@@ -69,16 +66,17 @@ class WhitepaperJournalEventPoster(WhitepaperJournalPosterBase):
         composer.zstack(self.img_style['avatar']['box'],
                         self.img_style['avatar']['align'])
         self.draw_text(content,
-                       [presenter.full_name],
+                       [presenter['full_name']],
                        self.txt_style['presenter_name'])
         self.draw_text(content,
-                       [presenter.title, presenter['company/organization']],
+                       [presenter['title'], presenter['orgnization']],
                        self.txt_style['presenter_title'])
 
-        self.draw_text(content,
-                       [presenter.self_intro],
-                       self.txt_style['presenter_introduction'])
-
+        y_pos = self.draw_text(
+            content,
+            [presenter['self_intro']],
+            self.txt_style['presenter_introduction'])
+        content.crop_bottom(y_pos + 20)
         self.imgs.extend([title, content])
 
     def draw_project(self, project):
@@ -92,33 +90,49 @@ class WhitepaperJournalEventPoster(WhitepaperJournalPosterBase):
         composer.zstack(self.img_style['logo']['box'],
                         self.img_style['logo']['align'])
 
-        self.draw_text(content,
-                       [project['short_description']],
-                       self.txt_style['project_description'])
+        y_pos = self.draw_text(
+            content,
+            [project.get('long_description', '') or
+                project.get('short_description', '')],
+            self.txt_style['project_description'])
+        content.crop_bottom(y_pos + 20)
         self.imgs.extend([title, content])
 
     def draw_session(self, session):
+        title = self.get_template('title.png')
+        self.draw_text(
+            title, ['Summary'], self.txt_style['title'])
+
         content = self.get_template('content.png')
-        self.draw_text(content,
-                       [session.name],
-                       self.txt_style['session_name'])
-        self.draw_text(content,
-                       [session.highlight or session.summary],
-                       self.txt_style['session_summary'])
-        self.imgs.append(content)
+        y_pos = self.draw_text(
+            content,
+            [session.get('highlight', '') or session['summary']],
+            self.txt_style['session_summary'])
+        content.crop_bottom(y_pos + 20)
+        self.imgs.extend([title, content])
+
+    def draw_session_name(self, session):
+        content = self.get_template('content.png')
+        y_pos = self.draw_text(
+            content,
+            [session['name']],
+            self.txt_style['session_name'])
+        content.crop_bottom(y_pos + 20)
+        self.imgs.extend([content])
 
     def draw(self, session, presenter):
         self.reset()
-        self.draw_session(session)
-        self.draw_schedule(session.schedule)
+        self.draw_session_name(session)
         self.draw_speaker(presenter)
-        self.draw_project(presenter.project)
-#        self.imgs.append(self.tail)
+        self.draw_project(presenter['project'])
+        self.draw_session(session)
+        self.draw_schedule(session['schedule'])
+        self.imgs.append(self.tail)
 
-    def process(self, args):
-        session = self.get_session(args.session)
-        presenter = self.get_presenter(session.presenter)
+    def process(self, session_id):
+        session = self.get_session(session_id)
+        presenter = self.get_presenter(session['presenter'])
         self.draw(session, presenter)
         composer = ImageComposer(self.imgs)
         composer.vstack()
-        self.save(composer, filename='session', upload=True)
+        self.save(composer, filename=str(session_id), upload=False)

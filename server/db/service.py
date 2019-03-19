@@ -1,9 +1,10 @@
 # -*- encoding: UTF-8 -*-
 
+from bson.objectid import ObjectId
 from datetime import datetime
 
 from .schema import SessionSchema, PresenterSchema, PictureSchema
-from .mongo import MongoConnection, PresenterStore, SessionStore, PictureStore
+from .mongo import MongoConnection, PresenterStore, SessionStore, PictureStore, CredentialStore
 
 class Service(object):
     def __init__(self, config):
@@ -11,6 +12,7 @@ class Service(object):
         self.session_store = SessionStore(conn)
         self.presenter_store = PresenterStore(conn)
         self.picture_store = PictureStore(conn)
+        self.credential_store = CredentialStore(conn)
 
     def get_sessions(self, start_time, end_time):
         selector = {
@@ -50,6 +52,15 @@ class Service(object):
     def get_picture(self, photo_id):
         picture = self.picture_store.find({'photo_id': photo_id})
         return self.dump_picture(picture)
+
+    def get_credential(self, session_id):
+        return self.credential_store.find({'_id': ObjectId(session_id)})
+
+    def get_credential_by_token(self, token):
+        return self.credential_store.find({'credentials.token': token})
+
+    def create_session(self, session):
+        return str(self.credential_store.create(session))
 
     def dump_session(self, data):
        return SessionSchema(exclude=['_id']).dump(data).data

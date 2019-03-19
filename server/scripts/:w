@@ -10,7 +10,6 @@ from server.db.service import Service
 import server.platforms.utils.util as util
 from server.platforms.google.photo import GooglePhoto
 from server.workflow.tasks.whitepaper_journal.event_poster import WhitepaperJournalEventPoster
-from server.scripts.data_sync import DataSync
 from google.oauth2 import service_account
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -19,6 +18,8 @@ COMMON_CONFIG_PATH = os.path.join(ROOT_DIR, '../config.yaml')
 
 MCARD_ALBUM_ID = "AGQRtP839EFOmh7vZZCSzPOfeU53lj6_Niytt5KyKJmj6Lh2vKGON-70RGjuQ5m77fnSDl9kDQsOrcj0LJNad4Wj6YbMfteGTg"
 POST_ALBUM_ID = "AGQRtP8Uj40efSoim2TAUe7j9uETcEpG3qoaUMJlP2-_wbZxBtqUpuTHJ7vQvYIFqjmxvufSIq45pjORmnU989in1qkga71iWQ"
+
+DELEGATED_USER = 'contact@abcer.world'
 
 
 def test_mongo():
@@ -42,16 +43,12 @@ def event_poster():
     scopes = config['google']['scopes']
     creds = service_account.Credentials.from_service_account_file(
         creds_file, scopes=scopes)
-    delegated_creds = creds.with_subject('contact@abcer.world')
+    delegated_creds = creds.with_subject(DELEGATED_USER)
     WhitepaperJournalEventPoster(delegated_creds).process(1550875924)
 
 
-def data_sync():
-    event_poster()
-
 def main():
     event_poster()
-#    data_sync()
 
 if __name__ == '__main__':
     main()

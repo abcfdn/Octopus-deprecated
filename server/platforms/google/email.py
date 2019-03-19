@@ -11,7 +11,7 @@ class GoogleMail(GoogleService):
         super(GoogleMail, self).__init__(settings)
 
     def create_service(self, creds)
-        return build('gmail', 'v1', credentials=creds)
+        return build('gmail', 'v1', credentials=creds, cache_discovery=False)
 
     def create_message(self, to, subject, text, text_type='plain'):
         message = MIMEText(message_text, text_type)

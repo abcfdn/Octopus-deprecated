@@ -1,5 +1,6 @@
 google:
     creds_file: /root/credentials/client_secret_1044583108938-rk6k1qnsk5du3d4el6ba1pofi3kaft0s.apps.googleusercontent.com.json
+    service_account: /root/credentials/decom-231205-88f320bc9297.json
     scopes:
         - https://www.googleapis.com/auth/gmail.compose
         - https://www.googleapis.com/auth/drive

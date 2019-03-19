@@ -6,11 +6,11 @@ sys.path.append("..")
 
 import logging
 
-from bson.objectid import ObjectId
-
 import server.platforms.utils.util as util
 from server.platforms.google.sheet import GoogleSheet
 from server.db.mongo import MongoConnection, SessionStore, PresenterStore
+
+from google.oauth2 import service_account
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(ROOT_DIR, 'config.yaml')
@@ -28,7 +28,12 @@ class DataSync:
         self.config = util.load_yaml(CONFIG_PATH)
         self.config.update(common_config)
 
-        self.sheet_service = GoogleSheet(self.config['google'])
+        creds = service_account.Credentials.from_service_account_file(
+            self.config['google']['service_account'],
+            scopes=self.config['google']['scopes'])
+        delegated_creds = creds.with_subject('contact@abcer.world')
+
+        self.sheet_service = GoogleSheet(delegated_creds)
         self.load_events()
         self.load_schedules()
 
@@ -44,7 +49,7 @@ class DataSync:
     def preprocess_schedule(self, schedule):
         date_time = '{} {} PST'.format(
             schedule['date'], schedule['start_time'])
-        schedule['start_at'] = to_epoch_time(date_time)
+        schedule['start_at'] = util.to_epoch_time(date_time)
         schedule['duration_as_mins'] = util.duration_as_mins(
             schedule['duration'])
 

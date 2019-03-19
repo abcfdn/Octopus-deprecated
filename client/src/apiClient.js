@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URI = 'http://206.189.161.176:4433';
+const BASE_URI = 'https://blockchainabc.org:4433';
 
 const client = axios.create({
    baseURL: BASE_URI,
@@ -23,6 +23,14 @@ class APIClient {
   getPresenter(username) {
     return this.perform(
       'get', '/presenter/' + encodeURIComponent(username));
+  }
+
+  getPoster(session_id, credential_id) {
+    var url = '/event_poster/' + session_id
+    if (credential_id) {
+      url += ('?credential_id=' + credential_id)
+    }
+    return this.perform('get', url);
   }
 
   refresh() {

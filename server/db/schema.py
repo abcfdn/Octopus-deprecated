@@ -57,8 +57,8 @@ class SessionSchema(Schema):
     schedule = fields.Nested(ScheduleSchema)
 
     @validates('language')
-    def validate_language(self, value):
-        if language.lower() not in ['english', 'chinese']:
+    def validate_language(self, language):
+        if language and language.lower() not in ['english', 'chinese']:
             raise ValidationError('Only Chinese and English are supported..')
 
 class PictureSchema(Schema):

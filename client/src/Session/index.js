@@ -6,6 +6,8 @@ import { withAuth } from '@okta/okta-react';
 
 import Paper from '@material-ui/core/Paper';
 import Link from 'react-router-dom/Link';
+import Button from '@material-ui/core/Button';
+import queryString from 'query-string';
 
 import APIClient from '../apiClient'
 import MarkdownUtil from '../util'
@@ -25,6 +27,7 @@ class Session extends React.Component {
   state = {
     session: {},
     presenter: {},
+    generatingPoster: false,
   };
 
   async componentDidMount() {
@@ -39,6 +42,26 @@ class Session extends React.Component {
     });
   }
 
+  handleClick = () => {
+    this.setState({...this.state, generatingPoster: true})
+    const session_id = this.props.match.params.session_id;
+    const params = queryString.parse(this.props.location.search)
+    const credential_id = params['credential_id']
+    this.props.auth.getAccessToken().then((token) => {
+      this.apiClient = new APIClient(token);
+      this.apiClient.getPoster(session_id, credential_id).then((data) => {
+        if (data['success']) {
+          this.setState({...this.state, generatingPoster: false})
+        } else {
+          var authorize_url = data['authorize_url']
+          var param = 'origin_url=' + window.location.href
+          authorize_url += (authorize_url.split('?')[1] ? '&':'?') + param
+          window.location = authorize_url
+        }
+      });
+    });
+  }
+
   render() {
     const { classes } = this.props;
     const markdownUtil = new MarkdownUtil();
@@ -47,9 +70,18 @@ class Session extends React.Component {
         <Link to='/'>
           Back
         </Link>
-
         <Paper className={classes.root} elevation={1}>
+          <Button
+            disabled={this.state.generatingPoster}
+            variant="contained"
+            color="primary"
+            onClick={this.handleClick}
+            className={styles.button}>
+            Generate Poster
+          </Button>
+
           <Schedule schedule={this.state.session.schedule}/>
+
           <ReactMarkdown
             source={markdownUtil.composeInput(
               this.state.session, this.state.presenter)}

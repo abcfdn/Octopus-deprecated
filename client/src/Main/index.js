@@ -12,8 +12,8 @@ class Main extends Component {
                <Router>
                  <Security
                    issuer={'https://dev-319775.okta.com'}
-                   client_id={'0oacfy8o8fzM4RgSY356'}
-                   redirect_uri={'http://206.189.161.176:8080/implicit/callback'}
+                   client_id={'0oadlcq59mtzs8ack356'}
+                   redirect_uri={'https://blockchainabc.org:8080/implicit/callback'}
                    scope={['openid', 'profile', 'email']}>
 
                    <Switch>

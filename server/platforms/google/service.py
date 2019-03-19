@@ -7,7 +7,7 @@ import flask
 
 class GoogleService:
     def __init__(self, credentials):
-        self.create_service(credentials)
+        self.service = self.create_service(credentials)
 
     def create_service(self, creds):
         raise("Not Implemented")

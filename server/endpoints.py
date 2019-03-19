@@ -7,7 +7,7 @@ import google_auth_oauthlib.flow
 
 from .middlewares import login_required
 from flask import Flask, json, g, request, session, url_for, redirect
-from db.service import Service
+from .db.service import Service
 from flask_cors import CORS
 
 import server.platforms.utils.util as util
@@ -15,6 +15,7 @@ from server.scripts.data_sync import DataSync
 from server.workflow.tasks.whitepaper_journal.event_poster import WhitepaperJournalEventPoster
 
 app = Flask(__name__)
+app.secret_key = 'Octopus: Star of Smart Media'
 CORS(app)
 
 REDIRECT_URL = 'https://206.189.161.176:8080/googleredirect'
@@ -24,29 +25,12 @@ CONFIG_PATH = os.path.join(ROOT_DIR, 'config.yaml')
 config = util.load_yaml(CONFIG_PATH)
 
 
-def get_google_credential(orgin_path):
-    if 'credentials' not in flask.session:
-        settings = config['google']
-        flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-            settings['creds_file'], scope=settings['scopes'])
-        flow.redirect_uri = REDIRECT_URL
-        authorization_url, state = flow.authorization_url(
-            access_type='offline',
-            state=orgin_path,
-            include_granted_scopes='true')
-        session['state'] = state
-        return redirect(authorization_url)
-    return google.oauth2.credentials.Credentials(
-        **session['credentials'])
-
-
-@app.route("/googleredirect", methods=["POST"])
-@login_required
+@app.route("/googleredirect", methods=["GET"])
 def oauth2callback():
     settings = config['google']
     state = session['state']
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        settings['creds_file'], scope=settings['scopes'], state=state)
+        settings['creds_file'], scopes=settings['scopes'], state=state)
     flow.redirect_uri = url_for('googleredirect', _external=True)
 
     authorization_response = request.url
@@ -63,6 +47,18 @@ def oauth2callback():
     redirect(url_for(state))
 
 
+@app.route("/googleauthorize", methods=["GET"])
+def authorize():
+    settings = config['google']
+    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+        settings['creds_file'], scopes=settings['scopes'])
+    flow.redirect_uri = REDIRECT_URL
+    authorization_url, state = flow.authorization_url(
+        access_type='offline',
+        include_granted_scopes='true')
+    return redirect(authorization_url)
+
+
 @app.route("/refresh", methods=["POST"])
 @login_required
 def refresh():
@@ -76,12 +72,15 @@ def schedule():
     return json_response({'success': True})
 
 
-@app.route("/poster/<int:session_id>", methods=["POST"])
+@app.route("/event_poster/<int:session_id>", methods=["GET"])
 @login_required
-def event_poster():
-    creds = get_google_credential(request.path)
-    poster_generator = WhitepaperJournalEventPoster()
-    poster_generator.process()
+def event_poster(session_id):
+    if 'credentials' not in session:
+        return redirect('googleauthorize')
+    creds = google.oauth2.credentials.Credentials(
+        **session['credentials'])
+    poster_generator = WhitepaperJournalEventPoster(creds)
+    poster_generator.process(session_id)
     return json_response({'success': True})
 
 

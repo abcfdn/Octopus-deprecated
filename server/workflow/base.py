@@ -10,7 +10,7 @@ from .constants import CONFIG_ROOT_PATH, TASK_CONFIG_ROOT_PATH
 
 class ResourceBase:
     def __init__(self, google_creds, data_config):
-        self.drive_service = GoogleDrive(google_config)
+        self.drive_service = GoogleDrive(google_creds)
         self.sync_to_local(data_config)
 
     def sync_to_local(self, data_config):
@@ -43,7 +43,7 @@ class Task(ResourceBase):
             TASK_CONFIG_ROOT_PATH,
             self.app_name(),
             '{}.yaml'.format(self.__class__.__name__)))
-        return util.deepmerge(task_config, task_common_config)
+        return util.deepmerge(task_config, common_config)
 
     def app_name(self):
         raise('Not Implemented')

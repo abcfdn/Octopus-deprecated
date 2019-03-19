@@ -33,7 +33,7 @@ class GooglePhoto(GoogleService):
         logger.info('Upload token {}'.format(r.content))
         return r.content
 
-    def create_item(self, album_id, filepath, file_description):
+    def create_item(self, album_id, filepath, file_description=''):
         upload_token = self.upload(filepath)
         body = {
             "albumId": album_id,
