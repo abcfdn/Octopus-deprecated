@@ -11,6 +11,28 @@ A content CI/CD (continues integration/delivery) management application for ABC 
 1. In one click (a buttom click or command line input), Octopus can delivers event/media content to supported media platforms as desired.
 2. Content monitoring/filtering in Slack/Discord/Telegram using chatbot.
 
+## Runbook
+
+Start Mongo
+
+```
+mongod --dbpath /root/data/mongodb --auth --port 27017
+```
+
+Start Flask
+
+```
+FLASK_APP=$PWD/app/http/api/endpoints.py FLASK_ENV=development pipenv run python -m flask run --port 4433 --host 0.0.0.0
+```
+
+Start React App:
+
+```
+npm start
+```
+
+visit `http://localhost:8080` to check the result
+
 ## Supported Platforms
 
 ### Google Drive
