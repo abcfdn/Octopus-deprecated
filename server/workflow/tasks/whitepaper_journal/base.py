@@ -10,7 +10,7 @@ from server.platforms.google.sheet import GoogleSheet
 import server.platforms.utils.util as util
 
 from server.db.service import Service
-from server.db.schema import SessionSchema, PresenterSchema, PictureSchema
+from server.db.schema import SessionSchema, PresenterSchema
 
 class WhitepaperJournalBase(Task):
     NUM_OF_ROWS_TO_READ = 1000

@@ -1,6 +1,9 @@
 class MarkdownUtil {
   composeLine = (key, value) => {
-    if (typeof value === 'string' && /^https?:\/\//.test(value)) {
+    if (['photo', 'logo', 'github', 'linkedin'].includes(key)) {
+      if (!value.startsWith('https')) {
+        value = 'https://' + value;
+      }
       return '__' + key + '__: [Link](' + value + ')';
     } else {
       return '__' + key + '__: ' + value;
@@ -25,6 +28,11 @@ class MarkdownUtil {
     lines = lines.concat(this.composeLines('Schedule', session.schedule, []));
     lines = lines.concat(this.composeLines('Presenter', presenter, ['project']));
     lines = lines.concat(this.composeLines('Project', presenter.project, []));
+    return lines.join('\n\n')
+  }
+
+  composeMember = (member) => {
+    var lines = this.composeLines(member['name'], member, ['name'])
     return lines.join('\n\n')
   }
 }

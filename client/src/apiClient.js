@@ -34,7 +34,19 @@ class APIClient {
   }
 
   refresh() {
-    return this.perform('post', '/refresh');
+    return this.perform('get', '/refresh_events');
+  }
+
+  reloadMembers(credential_id) {
+    var url = '/refresh_members'
+    if (credential_id) {
+      url += ('?credential_id=' + credential_id)
+    }
+    return this.perform('get', url);
+  }
+
+  getMembers() {
+    return this.perform('get', '/members');
   }
 
   async perform(method, resource, data) {

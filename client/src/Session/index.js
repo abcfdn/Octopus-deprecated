@@ -28,9 +28,13 @@ class Session extends React.Component {
     session: {},
     presenter: {},
     generatingPoster: false,
+    credential_id: null,
   };
 
   async componentDidMount() {
+    const params = queryString.parse(this.props.location.search)
+    this.setState({...this.state, credential_id: params['credential_id']})
+
     const accessToken = await this.props.auth.getAccessToken();
     const session_id = this.props.match.params.session_id;
     this.apiClient = new APIClient(accessToken);
@@ -45,11 +49,9 @@ class Session extends React.Component {
   handleClick = () => {
     this.setState({...this.state, generatingPoster: true})
     const session_id = this.props.match.params.session_id;
-    const params = queryString.parse(this.props.location.search)
-    const credential_id = params['credential_id']
     this.props.auth.getAccessToken().then((token) => {
       this.apiClient = new APIClient(token);
-      this.apiClient.getPoster(session_id, credential_id).then((data) => {
+      this.apiClient.getPoster(session_id, this.state.credential_id).then((data) => {
         if (data['success']) {
           this.setState({...this.state, generatingPoster: false})
         } else {

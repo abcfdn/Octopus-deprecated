@@ -4,6 +4,7 @@ import { Security, ImplicitCallback, SecureRoute } from '@okta/okta-react';
 
 import Login from '../Login'
 import Home from '../Home'
+import Members from '../Members'
 import Session from '../Session'
 
 class Main extends Component {
@@ -20,6 +21,7 @@ class Main extends Component {
                      <Route exact path="/" component={Login} />
                      <Route path="/implicit/callback" component={ImplicitCallback} />
                      <SecureRoute path="/home" component={Home} />
+                     <SecureRoute path="/members" component={Members} />
                      <SecureRoute path="/session/:session_id" component={Session} />
                    </Switch>
                  </Security>

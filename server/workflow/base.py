@@ -34,7 +34,10 @@ class Task(ResourceBase):
     def load_task_common_config(self):
         config_file = os.path.join(
             TASK_CONFIG_ROOT_PATH, self.app_name(), 'common.yaml')
-        return util.load_yaml(config_file)
+        if os.path.isfile(config_file):
+            return util.load_yaml(config_file)
+        else:
+            return {}
 
     def load_config(self):
         common_config = util.deepmerge(

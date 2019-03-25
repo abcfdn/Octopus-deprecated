@@ -2,6 +2,8 @@
 
 import logging
 
+import requests
+
 from googleapiclient.discovery import build
 from .service import GoogleService
 import jwt
@@ -10,9 +12,11 @@ logger = logging.getLogger('google_photo')
 
 class GooglePhoto(GoogleService):
     UPLOAD_URL = 'https://photoslibrary.googleapis.com/v1/uploads'
+    MEDIA_ITEM_URL = 'https://photoslibrary.googleapis.com/v1/mediaItems'
 
     def __init__(self, google_creds):
         super().__init__(google_creds)
+        self.credentials = google_creds
 
     def create_service(self, creds):
         return build('photoslibrary',
@@ -20,36 +24,52 @@ class GooglePhoto(GoogleService):
                      credentials=creds,
                      cache_discovery=False)
 
-    def upload(self, filepath):
+    def upload(self, filepaths):
+        return {self.upload_one(f) : f for f in filepaths}
+
+    def upload_one(self, filepath):
         logger.info('Uploading {} to google server...'.format(filepath))
+        print('Uploading {}...'.format(filepath))
         f = open(filepath, 'rb').read();
         headers = {
-            'Authorization': "Bearer " + self.service.credentials.access_token,
+            'Authorization': "Bearer " + self.credentials.token,
             'Content-Type': 'application/octet-stream',
             'X-Goog-Upload-File-Name': filepath,
             'X-Goog-Upload-Protocol': "raw",
         }
         r = requests.post(self.UPLOAD_URL, data=f, headers=headers)
-        logger.info('Upload token {}'.format(r.content))
-        return r.content
+        return r.content.decode('utf-8')
 
-    def create_item(self, album_id, filepath, file_description=''):
-        upload_token = self.upload(filepath)
-        body = {
-            "albumId": album_id,
-            "newMediaItems": [{
-                "description": file_description,
+    def batch_create_items(self, tokens):
+        print('Creating {} items in total'.format(len(tokens)))
+        num_batch = int(len(tokens) / 49 + 1)
+        results = []
+        for i in range(0, num_batch):
+            print('Creating batch {}...'.format(i))
+            token_to_process = tokens[49*i: 49*i + 48]
+            new_items = self.create_items(token_to_process).get('newMediaItemResults', [])
+            results.extend(new_items)
+        return results
+
+    def create_items(self, tokens):
+        if not tokens:
+            return []
+        body = {"newMediaItems": []}
+        for token in tokens:
+            body["newMediaItems"].append({
                 "simpleMediaItem": {
-                    "uploadToken": upload_token
+                    "uploadToken": token
                 }
-            }]
-        }
-        results = self.service.mediaItems().batchCreate(body=body).execute()
-        print(results)
+            })
+        return self.service.mediaItems().batchCreate(body=body).execute()
 
     def get_photo(self, photo_id):
-        searchBody = {"mediaItemId": photo_id}
-        results = self.service.mediaItems().get(body=searchBody).execute()
+        headers = {
+            'Authorization': "Bearer " + self.credentials.token,
+            'Content-Type': 'application/json',
+        }
+        r = requests.get('{}/{}'.format(self.MEDIA_ITEM_URL, photo_id), headers=headers)
+        return r.content.decode('utf-8')
 
     def get_photos(self, album_id, max_cnt=100):
         searchBody = {

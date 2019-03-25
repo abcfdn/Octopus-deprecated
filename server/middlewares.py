@@ -18,5 +18,4 @@ def login_required(f):
            return json.dumps({'error': 'invalid authorization token'}), 403, {'Content-type': 'application/json'}
 
        return f(*args, **kwargs)
-
    return wrap

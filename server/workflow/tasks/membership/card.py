@@ -2,28 +2,51 @@
 
 import os
 import logging
+from datetime import datetime, timedelta
 
-from toolset.image.composer import ImagePiece
-from toolset.google.photo import GooglePhoto
+import server.platforms.utils.util as util
+from server.platforms.image.composer import ImagePiece
 
-from apps.base import Task
-from .base import MembershipBase
+from server.workflow.base import Task
+from server.workflow.constants import MEMBERSHIP_APP
 
 logger = logging.getLogger('membership_card')
 
 
-class MembershipCard(MembershipBase):
-    def __init__(self, common_config):
-        super().__init__(common_config)
-        template_dir = self.config['data']['template']['local']
-        self.content = ImagePiece.from_file(
-            os.path.join(template_dir, 'membership_card.png'))
-        self.photo_service = GooglePhoto(self.config['google'])
+class MembershipCard(Task):
+    def __init__(self, google_creds):
+        super().__init__(google_creds)
+        self.txt_style = self.config['txt_style']
+        self.template_dir = self.config['data']['template']['local']
 
-    @classmethod
-    def add_parser(cls, parser):
-        event_poster_parser = parser.add_parser(
-            cls.__name__, help='create membership card')
+    def app_name(self):
+        return MEMBERSHIP_APP
 
-    def process(self, args):
-        self.photo_service.get_photos(self.config['data']['output']['album_id'])
+    def draw_text(self, img, lines, settings):
+        font = img.get_font(self.config['data']['font']['local'],
+                            settings['font'])
+        return img.draw_text(lines, font, settings)
+
+    def readable_date(self, started_at):
+        start_time = datetime.fromtimestamp(started_at)
+        # UTC to PST
+        start_time = start_time - timedelta(seconds=8*3600)
+        return start_time.strftime("%Y/%m")
+
+    def process(self, member):
+        output_dir = self.config['data']['output']
+        filepath = os.path.join(output_dir['local'], member['email'] + '.png')
+        exists = os.path.isfile('/path/to/file')
+        if not exists:
+            content = ImagePiece.from_file(
+                os.path.join(self.template_dir, 'membership_card.png'))
+            self.draw_text(
+                content,
+                [member['name']],
+                self.txt_style['name'])
+            self.draw_text(
+                content,
+                [self.readable_date(member['started_at'])],
+                self.txt_style['date'])
+            content.save(filepath)
+        return filepath

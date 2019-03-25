@@ -3,12 +3,12 @@ from marshmallow import Schema, fields, validates
 
 class ProjectSchema(Schema):
     name = fields.Str(required=True)
-    website = fields.Url()
+    website = fields.Str()
     short_description = fields.Str()
     long_description = fields.Str()
     team_background = fields.Str()
-    github = fields.Url()
-    logo = fields.Url()
+    github = fields.Str()
+    logo = fields.Str()
     focused_area = fields.Str()
 
 
@@ -17,16 +17,16 @@ class PresenterSchema(Schema):
     full_name = fields.Str()
     title = fields.Str()
     orgnization = fields.Str()
-    linkedin = fields.Url()
+    linkedin = fields.Str()
     self_intro = fields.Str()
-    photo = fields.Url()
+    photo = fields.Str()
     project = fields.Nested(ProjectSchema)
 
 
 class TopicSchema(Schema):
     name = fields.Str()
     sessions = fields.List(fields.Str())
-    poster = fields.Url()
+    poster = fields.Str()
 
 
 class ScheduleSchema(Schema):
@@ -35,10 +35,10 @@ class ScheduleSchema(Schema):
     site = fields.Str()
     address = fields.Str()
     location = fields.Str()
-    meetup = fields.Url()
-    eventbrite = fields.Url()
-    livestream = fields.Url()
-    poster = fields.Url()
+    meetup = fields.Str()
+    eventbrite = fields.Str()
+    livestream = fields.Str()
+    poster = fields.Str()
 
 
 class SessionSchema(Schema):
@@ -53,7 +53,7 @@ class SessionSchema(Schema):
     summary = fields.Str()
     highlight = fields.Str()
     pre_requisite = fields.Str()
-    deck_file = fields.Url()
+    deck_file = fields.Str()
     schedule = fields.Nested(ScheduleSchema)
 
     @validates('language')
@@ -61,22 +61,30 @@ class SessionSchema(Schema):
         if language and language.lower() not in ['english', 'chinese']:
             raise ValidationError('Only Chinese and English are supported..')
 
-class PictureSchema(Schema):
-    photo_id = fields.Str(required=True)
-    name = fields.Str()
-    description = fields.Str()
-    product_url = fields.Url()
-    base_url = fields.Url()
-    mime_type = fields.Str()
-    photo_type = fields.Str()
-    created_at = fields.Int()
-    height = fields.Int()
-    width = fields.Int()
+class PhotoSchema(Schema):
+    filename = fields.Str()
+    photo_id = fields.Str()
+    decription = fields.Str()
+    upload_token = fields.Str()
+    album_id = fields.Str()
+    base_url = fields.Str()
+    product_url = fields.Str()
 
-    @validates('photo_type')
-    def validate_photo_type(self, value):
-        if photo_type.lower() not in ['event_poster',
-                                      'topic_poster',
-                                      'membership_card',
-                                      'others']:
-            raise ValidationError('Unsupported photo type')
+class MemberSchema(Schema):
+    name = fields.Str()
+    started_at = fields.Int()
+    email = fields.Email()
+    organization = fields.Str()
+    location = fields.Str()
+    title = fields.Str()
+    linkedin = fields.Str()
+    github = fields.Str()
+    channel = fields.Str()
+    blokchain_experience = fields.Str()
+    interested_topic = fields.Str()
+    motivation = fields.Str()
+    volunteer_candidate = fields.Boolean()
+    suggestion = fields.Str()
+    self_intro = fields.Str()
+    photo = fields.Nested(PhotoSchema)
+    membership_card = fields.Nested(PhotoSchema)

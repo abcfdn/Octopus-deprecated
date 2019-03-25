@@ -1,29 +1,26 @@
 data:
+  font:
+    remote: 1giYvAN0_5gs71c9Vj5quHZ2syvKuj-5K
+    local: /tmp/abc_apps/fonts/
   template:
     remote: 1gp9k9iDP0eiHPFr2xCfhJpRDvbCnWw5k
     local: /tmp/abc_apps/membership/card/template/
-  members:
-    remote: 1Kn3gU2rQMvKQ9RFbnWwI-tjRUr9eARMarTcXkPp1Yv0
-  members_generated:
-    remote: 1PyoIjDYuMlhfCs5NYea32q29i4_Jt02FTWT7kzF-oOw
   output:
-    remote: 1ycDfigTK0-etDTG-ewLTU94nZXAtyqRD
-    album_id: AGQRtP839EFOmh7vZZCSzPOfeU53lj6_Niytt5KyKJmj6Lh2vKGON-70RGjuQ5m77fnSDl9kDQsOrcj0LJNad4Wj6YbMfteGTg
     local: /tmp/abc_apps/membership/card/output
-text_style:
+txt_style:
   name:
-    x_pos: 105
-    y_pos: 481
-    gap: 2
+    box: [105, 481, 400]
+    gap: [2, 0]
+    align: left
     font:
       type: arial
       size: 23
-    fill: (230, 230, 230, 255) # white
+    fill: [230, 230, 230, 255] # white
   date:
-    x_pos: 870
-    y_pos: 478
-    gap: 0
+    box: [870, 478, 1000]
+    gap: [0, 0]
+    align: left
     font:
       type: arial
       size: 23
-    fill: (230, 230, 230, 255) # white
+    fill: [230, 230, 230, 255] # white

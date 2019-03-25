@@ -3,8 +3,8 @@
 from bson.objectid import ObjectId
 from datetime import datetime
 
-from .schema import SessionSchema, PresenterSchema, PictureSchema
-from .mongo import MongoConnection, PresenterStore, SessionStore, PictureStore, CredentialStore
+from .schema import SessionSchema, PresenterSchema, PhotoSchema, MemberSchema
+from .mongo import MongoConnection, PresenterStore, SessionStore, PictureStore, CredentialStore, MemberStore
 
 class Service(object):
     def __init__(self, config):
@@ -13,6 +13,7 @@ class Service(object):
         self.presenter_store = PresenterStore(conn)
         self.picture_store = PictureStore(conn)
         self.credential_store = CredentialStore(conn)
+        self.member_store = MemberStore(conn)
 
     def get_sessions(self, start_time, end_time):
         selector = {
@@ -42,14 +43,22 @@ class Service(object):
         session = self.session_store.find({'created_at': created_at})
         return self.dump_session(session)
 
+    def get_member(self, email):
+        member = self.member_store.find({'email': email})
+        return self.dump_member(member)
+
+    def get_members(self):
+        members = self.member_store.find_all({})
+        return [self.dump_member(m) for m in members]
+
     def get_presenter(self, email):
         presenter = self.presenter_store.find({'email': email})
         return self.dump_presenter(presenter)
 
-    def store_picture(self, data):
+    def store_photo(self, data):
         return self.picture_store.create(self.dump_picture(data))
 
-    def get_picture(self, photo_id):
+    def get_photo(self, photo_id):
         picture = self.picture_store.find({'photo_id': photo_id})
         return self.dump_picture(picture)
 
@@ -69,4 +78,7 @@ class Service(object):
        return PresenterSchema(exclude=['_id']).dump(data).data
 
     def dump_picture(self, data):
-       return PictureSchema(exclude=['_id']).dump(data).data
+       return PhotoSchema(exclude=['_id']).dump(data).data
+
+    def dump_member(self, data):
+       return MemberSchema(exclude=['_id']).dump(data).data

@@ -5,6 +5,7 @@ google:
         - https://www.googleapis.com/auth/gmail.compose
         - https://www.googleapis.com/auth/drive
         - https://www.googleapis.com/auth/photoslibrary
+        - https://www.googleapis.com/auth/photoslibrary.sharing
 mongo:
     username: root
     password: root@m0vefast

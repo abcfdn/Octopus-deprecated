@@ -13,6 +13,7 @@ from flask_cors import CORS
 
 import platforms.utils.util as util
 from scripts.data_sync import DataSync
+from workflow.tasks.membership.sync import MemberSync
 from workflow.tasks.whitepaper_journal.event_poster import WhitepaperJournalEventPoster
 
 app = Flask(__name__)
@@ -24,6 +25,18 @@ AUTHORIZE_URL = "https://blockchainabc.org:4433/authorize_google"
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(ROOT_DIR, 'config.yaml')
 config = util.load_yaml(CONFIG_PATH)
+
+
+def load_google_creds():
+    credential_id = request.args.get('credential_id', '')
+    if not credential_id:
+        return None
+    credential = Service(config['mongo']).get_credential(credential_id)
+    if not credential:
+        return None
+    del credential['_id']
+    return google.oauth2.credentials.Credentials(
+        **credential['credentials'])
 
 
 @app.route("/googleredirect", methods=["GET"])
@@ -44,7 +57,7 @@ def google_callback():
         credential_id = str(existing['_id'])
     else:
         credential_id = service.create_session({
-            'createdAt': datetime.utcnow(),
+            'created_at': datetime.utcnow(),
             'source': 'google',
             'credentials': {
                 'token': credentials.token,
@@ -99,10 +112,34 @@ def clear():
     return json_response({'success': True})
 
 
-@app.route("/refresh", methods=["POST"])
+@app.route("/refresh_events", methods=["GET"])
 @login_required
-def refresh():
+def sync_events():
     DataSync(config).sync()
+    return json_response({'success': True})
+
+
+@app.route("/sessions", methods=["GET"])
+@login_required
+def load_sessions():
+    return json_response(Service(config['mongo']).get_recent_sessions())
+
+
+@app.route("/members", methods=["GET"])
+@login_required
+def load_members():
+    members = Service(config['mongo']).get_members()
+    return json_response(members)
+
+
+@app.route("/refresh_members", methods=["GET"])
+@login_required
+def sync_members():
+    credentials = load_google_creds()
+    if not credentials:
+        return json_response({
+            'success': False, 'authorize_url': AUTHORIZE_URL})
+    MemberSync(credentials, config['mongo']).sync()
     return json_response({'success': True})
 
 
@@ -115,22 +152,13 @@ def schedule():
 @app.route("/event_poster/<int:session_id>", methods=["GET"])
 @login_required
 def event_poster(session_id):
-    credential_id = request.args.get('credential_id', '')
-    if not credential_id:
+    credentials = load_google_creds()
+    if not credentials:
         return json_response({
             'success': False, 'authorize_url': AUTHORIZE_URL})
-    credential = Service(config['mongo']).get_credential(credential_id)
-    creds = google.oauth2.credentials.Credentials(
-        **credential['credentials'])
-    poster_generator = WhitepaperJournalEventPoster(creds)
+    poster_generator = WhitepaperJournalEventPoster(credentials)
     poster_generator.process(session_id)
     return json_response({'success': True})
-
-
-@app.route("/sessions", methods=["GET"])
-@login_required
-def index():
-    return json_response(Service(config['mongo']).get_recent_sessions())
 
 
 @app.route("/session/<int:session_id>", methods=["GET"])

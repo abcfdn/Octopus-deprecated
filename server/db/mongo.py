@@ -26,8 +26,8 @@ class MongoStore:
     def get_coll_name(self):
         raise "Not Implemented"
 
-    def find_all(self, selector):
-        return self.coll.find(selector)
+    def find_all(self, selector, max_cnt=100):
+        return self.coll.find(selector).limit(max_cnt)
 
     def find(self, selector):
         return self.coll.find_one(selector)
@@ -66,3 +66,7 @@ class PictureStore(MongoStore):
 class CredentialStore(MongoStore):
     def get_coll_name(self):
         return "google_credentials"
+
+class MemberStore(MongoStore):
+    def get_coll_name(self):
+        return "members"

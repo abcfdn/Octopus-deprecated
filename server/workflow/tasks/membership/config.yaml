@@ -45,3 +45,18 @@ fields:
         eventbrite: eventbrite
         livestream: livestream
         poster: poster
+    member:
+        email_address: email
+        started_at: started_at
+        your_full_name: name
+        company/organization: orgnization
+        title_/_occupation: title
+        location: location
+        linkedin: linkedin
+        github: github
+        how_did_you_hear_about_our_community?: channel
+        what_is_your_blockchain_experience_level?: blockchain_experince
+        which_areas_of_blockchain_are_you_interested_in?: interested_topic
+        why_do_you_want_to_join_our_community: motivation
+        volunteer_candidate: volunteer_candidate
+        any_suggestion: suggestion
