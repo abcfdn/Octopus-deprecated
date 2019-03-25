@@ -1,6 +1,6 @@
 class MarkdownUtil {
   composeLine = (key, value) => {
-    if (['photo', 'logo', 'github', 'linkedin'].includes(key)) {
+    if (['photo', 'logo', 'github', 'linkedin', 'membership_card'].includes(key)) {
       if (!value.startsWith('https')) {
         value = 'https://' + value;
       }
@@ -32,7 +32,10 @@ class MarkdownUtil {
   }
 
   composeMember = (member) => {
-    var lines = this.composeLines(member['name'], member, ['name'])
+    var lines = this.composeLines(member['name'], member, ['name', 'membership_card'])
+    if (member.membership_card) {
+      lines.push(this.composeLine('membership_card', member.membership_card.base_url))
+    }
     return lines.join('\n\n')
   }
 }
