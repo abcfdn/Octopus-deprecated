@@ -126,6 +126,9 @@ class ImagePiece:
             self.img, size, method=Image.ANTIALIAS, centering=(0.5, 0.5))
         self.img.putalpha(mask)
 
+    def resize(self, size):
+        self.img = self.img.resize(size, Image.ANTIALIAS)
+
     def get_img(self):
         return self.img
 

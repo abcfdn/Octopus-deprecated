@@ -25,9 +25,13 @@ class MarkdownUtil {
   composeInput = (session, presenter) => {
     var lines = [];
     lines = lines.concat(this.composeLines('Session', session, ['schedule']));
-    lines = lines.concat(this.composeLines('Schedule', session.schedule, []));
+    if (session.schedule) {
+      lines = lines.concat(this.composeLines('Schedule', session.schedule, []));
+    }
     lines = lines.concat(this.composeLines('Presenter', presenter, ['project']));
-    lines = lines.concat(this.composeLines('Project', presenter.project, []));
+    if (presenter.project) {
+      lines = lines.concat(this.composeLines('Project', presenter.project, []));
+    }
     return lines.join('\n\n')
   }
 

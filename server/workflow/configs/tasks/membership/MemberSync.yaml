@@ -1,7 +1,8 @@
 data:
     member:
         remote:
-            1Kn3gU2rQMvKQ9RFbnWwI-tjRUr9eARMarTcXkPp1Yv0
+            - 1Kn3gU2rQMvKQ9RFbnWwI-tjRUr9eARMarTcXkPp1Yv0
+            - 1nTY5A1fYrjXIba-lBXvAay9gVnWzKuJfvwuaVIhKjmo
     output:
         album_id: ANhh68-Fj8LYLnKAvVY_eZNKGRSLqzRgoKtoKM8WtcvfTxJiK9GuyVHu5g8Wl24GZe6Z2xrbcxhk
         local: /tmp/abc_apps/membership/card/output
@@ -21,3 +22,4 @@ fields:
         why_do_you_want_to_join_our_community: motivation
         volunteer_candidate: volunteer_candidate
         any_suggestion: suggestion
+        resume: resume

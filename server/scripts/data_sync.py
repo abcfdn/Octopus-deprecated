@@ -24,20 +24,14 @@ class DataSync:
     NUM_OF_ROWS_TO_READ = 1000
     FIELDS_TO_COMPARE = ['session_name', 'presenter_name']
 
-    def __init__(self, common_config):
+    def __init__(self, google_creds, mongo_config):
         self.config = util.load_yaml(CONFIG_PATH)
-        self.config.update(common_config)
 
-        creds = service_account.Credentials.from_service_account_file(
-            self.config['google']['service_account'],
-            scopes=self.config['google']['scopes'])
-        delegated_creds = creds.with_subject('contact@abcer.world')
-
-        self.sheet_service = GoogleSheet(delegated_creds)
+        self.sheet_service = GoogleSheet(google_creds)
         self.load_events()
         self.load_schedules()
 
-        conn = MongoConnection(self.config['mongo'])
+        conn = MongoConnection(mongo_config)
         self.session_store = SessionStore(conn)
         self.presenter_store = PresenterStore(conn)
 

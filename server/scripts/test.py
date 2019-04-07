@@ -11,6 +11,7 @@ import server.platforms.utils.util as util
 from server.platforms.google.photo import GooglePhoto
 from server.workflow.tasks.whitepaper_journal.event_poster import WhitepaperJournalEventPoster
 from server.scripts.data_sync import DataSync
+from server.workflow.tasks.membership.sync import MemberSync
 from google.oauth2 import service_account
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -19,6 +20,13 @@ COMMON_CONFIG_PATH = os.path.join(ROOT_DIR, '../config.yaml')
 
 MCARD_ALBUM_ID = "AGQRtP839EFOmh7vZZCSzPOfeU53lj6_Niytt5KyKJmj6Lh2vKGON-70RGjuQ5m77fnSDl9kDQsOrcj0LJNad4Wj6YbMfteGTg"
 POST_ALBUM_ID = "AGQRtP8Uj40efSoim2TAUe7j9uETcEpG3qoaUMJlP2-_wbZxBtqUpuTHJ7vQvYIFqjmxvufSIq45pjORmnU989in1qkga71iWQ"
+
+
+def config():
+    config = util.load_yaml(CONFIG_PATH)
+    common_config = util.load_yaml(COMMON_CONFIG_PATH)
+    config.update(common_config)
+    return config
 
 
 def test_mongo():
@@ -36,22 +44,28 @@ def test_photo():
     service.create_item(POST_ALBUM_ID, filepath, "poster for test")
 
 
-def event_poster():
-    config = util.load_yaml(COMMON_CONFIG_PATH)
+def google_creds(config):
     creds_file = config['google']['service_account']
     scopes = config['google']['scopes']
     creds = service_account.Credentials.from_service_account_file(
         creds_file, scopes=scopes)
-    delegated_creds = creds.with_subject('contact@abcer.world')
-    WhitepaperJournalEventPoster(delegated_creds).process(1550875924)
+    return creds.with_subject('contact@abcer.world')
+
+
+def event_poster():
+    config = util.load_yaml(COMMON_CONFIG_PATH)
+    WhitepaperJournalEventPoster(google_creds(config)).process(1550875924)
 
 
 def data_sync():
-    event_poster()
+    DataSync(config()).sync()
+
+def member_sync():
+    config = util.load_yaml(COMMON_CONFIG_PATH)
+    MemberSync(google_creds(config), config['mongo']).sync()
 
 def main():
-    event_poster()
-#    data_sync()
+    member_sync()
 
 if __name__ == '__main__':
     main()

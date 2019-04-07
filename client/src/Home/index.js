@@ -11,6 +11,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Button from '@material-ui/core/Button';
 import Link from 'react-router-dom/Link';
 
+import queryString from 'query-string';
+
 import APIClient from '../apiClient'
 import SessionDetail from '../SessionDetail'
 
@@ -36,9 +38,13 @@ class Home extends React.Component {
   state = {
     sessions: [],
     refreshed: true,
+    credential_id: null,
   };
 
   async componentDidMount() {
+    const params = queryString.parse(this.props.location.search)
+    this.setState({...this.state, credential_id: params['credential_id']})
+
     const accessToken = await this.props.auth.getAccessToken()
     this.apiClient = new APIClient(accessToken);
     this.apiClient.getSessions().then((data) => {
@@ -50,8 +56,15 @@ class Home extends React.Component {
     this.setState({...this.state, refreshed: false})
     this.props.auth.getAccessToken().then((token) => {
       this.apiClient = new APIClient(token);
-      this.apiClient.refresh().then((data) => {
-        this.setState({...this.state, refreshed: true})
+      this.apiClient.refresh(this.state.credential_id).then((data) => {
+        if (data['success']) {
+          this.setState({...this.state, refreshed: true})
+        } else {
+          var authorize_url = data['authorize_url']
+          var param = 'origin_url=' + window.location.href
+          authorize_url += (authorize_url.split('?')[1] ? '&':'?') + param
+          window.location = authorize_url
+        }
       });
     });
   }

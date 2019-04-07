@@ -43,12 +43,17 @@ class Service(object):
         session = self.session_store.find({'created_at': created_at})
         return self.dump_session(session)
 
+    def get_candidate_sessions(self):
+        selector = { "schedule" : { "$exists" : False } }
+        sessions = self.session_store.find_all(selector)
+        return [self.dump_session(s) for s in sessions]
+
     def get_member(self, email):
         member = self.member_store.find({'email': email})
         return self.dump_member(member)
 
     def get_members(self):
-        members = self.member_store.find_all({})
+        members = self.member_store.find_all({}, max_cnt=1000)
         return [self.dump_member(m) for m in members]
 
     def get_presenter(self, email):

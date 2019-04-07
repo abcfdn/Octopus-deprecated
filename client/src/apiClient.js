@@ -33,8 +33,12 @@ class APIClient {
     return this.perform('get', url);
   }
 
-  refresh() {
-    return this.perform('get', '/refresh_events');
+  refresh(credential_id) {
+    var url = '/refresh_events'
+    if (credential_id) {
+      url += ('?credential_id=' + credential_id)
+    }
+    return this.perform('get', url);
   }
 
   reloadMembers(credential_id) {

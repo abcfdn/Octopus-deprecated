@@ -10,6 +10,7 @@ import pytz
 from server.platforms.image.composer import ImageComposer, ImagePiece
 from server.platforms.google.sheet import GoogleSheet
 import server.platforms.utils.util as util
+from server.platforms.image.qrcode import create_qr_code
 
 from server.workflow.base import Task
 from .poster_base import WhitepaperJournalPosterBase
@@ -36,8 +37,6 @@ class WhitepaperJournalEventPoster(WhitepaperJournalPosterBase):
 
     def readable_datetime(self, schedule):
         start_time = datetime.fromtimestamp(schedule['start_at'])
-        # UTC to PST
-        start_time = start_time - timedelta(seconds=8*3600)
         weekday = calendar.day_name[start_time.weekday()]
         readable_date = '{}, {}'.format(weekday, start_time.strftime("%B %d, %Y"))
 
@@ -52,9 +51,23 @@ class WhitepaperJournalEventPoster(WhitepaperJournalPosterBase):
                        self.txt_style['datetime'])
         self.imgs.append(self.datetime)
 
-        address = [schedule['address'], schedule['location']]
-        self.draw_text(self.location, address, self.txt_style['address'])
-        self.imgs.append(self.location)
+        if 'address' in schedule and 'location' in schedule:
+            address = [schedule['address'], schedule['location']]
+            self.draw_text(self.location, address, self.txt_style['address'])
+            self.imgs.append(self.location)
+
+        if 'zoom_link' in schedule:
+            content = self.get_template('content.png')
+            qrcode = ImagePiece(create_qr_code(schedule['zoom_link']))
+            qrcode.resize((150, 150))
+            composer = ImageComposer([content, qrcode])
+            composer.zstack(self.img_style['qrcode']['box'],
+                            self.img_style['qrcode']['align'])
+            decription = ["Scan the QR Code to join us from zoom"]
+            decription.append("Passcode: {}".format(schedule["zoom_passcode"]))
+            self.draw_text(content, decription, self.txt_style['online_link'])
+            content.crop_bottom(250)
+            self.imgs.append(content)
 
     def draw_speaker(self, presenter):
         title = self.get_template('title.png')
@@ -123,10 +136,10 @@ class WhitepaperJournalEventPoster(WhitepaperJournalPosterBase):
     def draw(self, session, presenter):
         self.reset()
         self.draw_session_name(session)
+        self.draw_schedule(session['schedule'])
         self.draw_speaker(presenter)
         self.draw_project(presenter['project'])
         self.draw_session(session)
-        self.draw_schedule(session['schedule'])
         self.imgs.append(self.tail)
 
     def process(self, session_id):

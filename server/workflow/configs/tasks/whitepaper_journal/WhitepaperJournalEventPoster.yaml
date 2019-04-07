@@ -13,6 +13,10 @@ img_style:
         box: [200, 20, 400]
         size: [400, 200]
         align: center
+    qrcode:
+        box: [90, 50, 600]
+        size: [300, 300]
+        align: left
 txt_style:
     title:
         box: [200, 43, 400]
@@ -28,7 +32,7 @@ txt_style:
         align: left
         font:
             type: impact
-            size: 70
+            size: 62
         fill: [219, 232, 252, 255]
     session_summary:
         box: [90, 20, 640]
@@ -64,7 +68,7 @@ txt_style:
         fill: [219, 232, 252, 255]
     project_description:
         box: [90, 280, 640]
-        gap: [1, 0]
+        gap: [2, 8]
         align: left
         font:
             type: arial
@@ -85,4 +89,12 @@ txt_style:
         font:
           type: arial
           size: 30
+        fill: [219, 232, 252, 255]
+    online_link:
+        box: [300, 80, 300]
+        gap: [1, 0]
+        align: left
+        font:
+            type: arial
+            size: 27
         fill: [219, 232, 252, 255]

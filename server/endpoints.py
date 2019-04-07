@@ -115,14 +115,21 @@ def clear():
 @app.route("/refresh_events", methods=["GET"])
 @login_required
 def sync_events():
-    DataSync(config).sync()
+    credentials = load_google_creds()
+    if not credentials:
+        return json_response({
+            'success': False, 'authorize_url': AUTHORIZE_URL})
+    DataSync(credentials, config['mongo']).sync()
     return json_response({'success': True})
 
 
 @app.route("/sessions", methods=["GET"])
 @login_required
 def load_sessions():
-    return json_response(Service(config['mongo']).get_recent_sessions())
+    service = Service(config['mongo'])
+    recent_sessions = service.get_recent_sessions()
+    candidate_sessions = service.get_candidate_sessions()
+    return json_response(recent_sessions + candidate_sessions)
 
 
 @app.route("/members", methods=["GET"])

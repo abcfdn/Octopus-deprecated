@@ -4,7 +4,7 @@ def create_qr_code(content):
     qr = qrcode.QRCode(
         version=2,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=10,
+        box_size=20,
         border=4,
     )
     qr.add_data(content)
