@@ -9,6 +9,7 @@ from .service import GoogleService
 import jwt
 
 logger = logging.getLogger('google_photo')
+logger.setLevel(logging.INFO)
 
 class GooglePhoto(GoogleService):
     UPLOAD_URL = 'https://photoslibrary.googleapis.com/v1/uploads'
@@ -29,7 +30,6 @@ class GooglePhoto(GoogleService):
 
     def upload_one(self, filepath):
         logger.info('Uploading {} to google server...'.format(filepath))
-        print('Uploading {}...'.format(filepath))
         f = open(filepath, 'rb').read();
         headers = {
             'Authorization': "Bearer " + self.credentials.token,
@@ -41,11 +41,11 @@ class GooglePhoto(GoogleService):
         return r.content.decode('utf-8')
 
     def batch_create_items(self, tokens):
-        print('Creating {} items in total'.format(len(tokens)))
+        logger.info('Creating {} items in total'.format(len(tokens)))
         num_batch = int(len(tokens) / 49 + 1)
         results = []
         for i in range(0, num_batch):
-            print('Creating batch {}...'.format(i))
+            logger.info('Creating batch {}...'.format(i))
             token_to_process = tokens[49*i: 49*i + 48]
             new_items = self.create_items(token_to_process).get('newMediaItemResults', [])
             results.extend(new_items)
@@ -71,10 +71,10 @@ class GooglePhoto(GoogleService):
         r = requests.get('{}/{}'.format(self.MEDIA_ITEM_URL, photo_id), headers=headers)
         return r.content.decode('utf-8')
 
-    def get_photos(self, album_id, max_cnt=100):
+    def get_photos(self, album_id, max_cnt=1000):
         searchBody = {
             "albumId": album_id,
-            "pageSize": 10
+            "pageSize": 20
         }
         results = self.service.mediaItems().search(body=searchBody).execute()
         items = results.get('mediaItems', [])

@@ -3,8 +3,11 @@ data:
         remote:
             - 1Kn3gU2rQMvKQ9RFbnWwI-tjRUr9eARMarTcXkPp1Yv0
             - 1nTY5A1fYrjXIba-lBXvAay9gVnWzKuJfvwuaVIhKjmo
-    output:
+    google_photo:
         album_id: ANhh68-Fj8LYLnKAvVY_eZNKGRSLqzRgoKtoKM8WtcvfTxJiK9GuyVHu5g8Wl24GZe6Z2xrbcxhk
+    imgur:
+        album_id: TTA1Bp4
+    output:
         local: /tmp/abc_apps/membership/card/output
 fields:
     member:

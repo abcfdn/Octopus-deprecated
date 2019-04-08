@@ -1,6 +1,8 @@
 # -*- encoding: UTF-8 -*-
 
 import os
+import json
+import logging
 from datetime import datetime
 
 import google.oauth2.credentials
@@ -16,99 +18,47 @@ from scripts.data_sync import DataSync
 from workflow.tasks.membership.sync import MemberSync
 from workflow.tasks.whitepaper_journal.event_poster import WhitepaperJournalEventPoster
 
+FORMAT = '%(asctime)s %(levelname)s %(message)s'
+logging.basicConfig(format=FORMAT)
+logger = logging.getLogger('endpoint')
+logger.setLevel(logging.INFO)
+
 app = Flask(__name__)
 app.secret_key = 'Octopus: Star of Smart Media'
 CORS(app)
-
-AUTHORIZE_URL = "https://blockchainabc.org:4433/authorize_google"
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(ROOT_DIR, 'config.yaml')
 config = util.load_yaml(CONFIG_PATH)
 
+mongo_service = Service(config['mongo'])
+
 
 def load_google_creds():
-    credential_id = request.args.get('credential_id', '')
-    if not credential_id:
+    query_res = mongo_service.get_credential(g.user, 'google')
+    if not query_res:
         return None
-    credential = Service(config['mongo']).get_credential(credential_id)
-    if not credential:
-        return None
-    del credential['_id']
+    cred = query_res['credentials']
     return google.oauth2.credentials.Credentials(
-        **credential['credentials'])
+        token=cred['token'],
+        id_token=cred['id_token'],
+        scopes=cred['scopes'])
 
 
-@app.route("/googleredirect", methods=["GET"])
-def google_callback():
-    settings = config['google']
-    state = session['state']
-    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        settings['creds_file'], scopes=settings['scopes'], state=state)
-    flow.redirect_uri = url_for('google_callback', _external=True)
-
-    authorization_response = request.url
-    flow.fetch_token(authorization_response=authorization_response)
-
-    credentials = flow.credentials
-    service = Service(config['mongo'])
-    existing = service.get_credential_by_token(credentials.token)
-    if existing:
-        credential_id = str(existing['_id'])
-    else:
-        credential_id = service.create_session({
-            'created_at': datetime.utcnow(),
-            'source': 'google',
-            'credentials': {
-                'token': credentials.token,
-                'refresh_token': credentials.refresh_token,
-                'token_uri': credentials.token_uri,
-                'client_id': credentials.client_id,
-                'client_secret': credentials.client_secret,
-                'scopes': credentials.scopes
-            }
-        })
-    sep = '?' if len(state.split('?')) == 1 else '&'
-    params = '{}credential_id={}'.format(sep, credential_id)
-    return redirect(state + params)
-
-
-@app.route("/authorize_google", methods=["GET"])
-def authorize():
-    settings = config['google']
-    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        settings['creds_file'], scopes=settings['scopes'])
-    flow.redirect_uri = url_for('google_callback', _external=True)
-    authorization_url, state = flow.authorization_url(
-        access_type='offline',
-        state=request.args.get('origin_url'),
-        include_granted_scopes='true')
-    session['state'] = state
-    return redirect(authorization_url)
-
-
-@app.route("/revoke_google", methods=["GET"])
+@app.route("/store_google_creds", methods=["POST"])
 @login_required
-def revoke(session_id):
-    if 'credentials' not in session:
-        return json_response({'success': True})
-    credentials = google.oauth2.credentials.Credentials(
-        **session['credentials'])
-    revoke = request.post('https://accounts.google.com/o/oauth2/revoke',
-        params={'token': credentials.token},
-        headers = {'content-type': 'application/x-www-form-urlencoded'})
-    status_code = getattr(revoke, 'status_code')
-    if status_code == 200:
-        return json_response({'success': True})
-    else:
-        return json_response({'success': False})
-
-
-@app.route("/clear_google", methods=["GET"])
-@login_required
-def clear():
-    if 'credentials' in session:
-        del session['credentials']
+def store_google_creds():
+    data = json.loads(request.data.decode('utf8'))
+    mongo_service.create_credential({
+        'created_at': datetime.utcnow(),
+        'source': 'google',
+        'user': g.user,
+        'credentials': {
+            'token': data['access_token'],
+            'id_token': data['id_token'],
+            'scopes': data['scope'].split(' ')
+        }
+    })
     return json_response({'success': True})
 
 
@@ -117,8 +67,7 @@ def clear():
 def sync_events():
     credentials = load_google_creds()
     if not credentials:
-        return json_response({
-            'success': False, 'authorize_url': AUTHORIZE_URL})
+        return json_response({'success': False, 'error': 'Google Not Authorized'})
     DataSync(credentials, config['mongo']).sync()
     return json_response({'success': True})
 
@@ -126,9 +75,9 @@ def sync_events():
 @app.route("/sessions", methods=["GET"])
 @login_required
 def load_sessions():
-    service = Service(config['mongo'])
-    recent_sessions = service.get_recent_sessions()
-    candidate_sessions = service.get_candidate_sessions()
+    mongo_service = Service(config['mongo'])
+    recent_sessions = mongo_service.get_recent_sessions()
+    candidate_sessions = mongo_service.get_candidate_sessions()
     return json_response(recent_sessions + candidate_sessions)
 
 
@@ -144,9 +93,11 @@ def load_members():
 def sync_members():
     credentials = load_google_creds()
     if not credentials:
-        return json_response({
-            'success': False, 'authorize_url': AUTHORIZE_URL})
-    MemberSync(credentials, config['mongo']).sync()
+        return json_response({'success': False, 'error': 'Google Not Authorized'})
+#    MemberSync(credentials, config['mongo']).sync()
+    MemberSync(credentials,
+        config['imgur']['creds_file'],
+        config['mongo']).sync_membership_card()
     return json_response({'success': True})
 
 
@@ -161,8 +112,7 @@ def schedule():
 def event_poster(session_id):
     credentials = load_google_creds()
     if not credentials:
-        return json_response({
-            'success': False, 'authorize_url': AUTHORIZE_URL})
+        return json_response({'success': False, 'error': 'Google Not Authorized'})
     poster_generator = WhitepaperJournalEventPoster(credentials)
     poster_generator.process(session_id)
     return json_response({'success': True})

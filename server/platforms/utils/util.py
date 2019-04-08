@@ -67,3 +67,6 @@ def to_epoch_time(time):
 
 def duration_as_sec(duration):
     return duration_as_mins(duration) * 60
+
+def canonicalize_name(name):
+    return " ".join([n.lower().capitalize() for n in name.split(' ')])

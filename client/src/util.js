@@ -37,9 +37,9 @@ class MarkdownUtil {
 
   composeMember = (member) => {
     var lines = this.composeLines(member['name'], member, ['name', 'membership_card'])
-    if (member.membership_card) {
-      lines.push(this.composeLine('membership_card', member.membership_card.base_url))
-    }
+//    if (member.membership_card) {
+//      lines.push(this.composeLine('membership_card', member.membership_card.baseUrl))
+//    }
     return lines.join('\n\n')
   }
 }

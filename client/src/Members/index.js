@@ -11,6 +11,12 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Button from '@material-ui/core/Button';
 import Link from 'react-router-dom/Link';
 
+import TextField from '@material-ui/core/TextField';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+
 import queryString from 'query-string';
 
 import APIClient from '../apiClient'
@@ -37,7 +43,7 @@ class Members extends React.Component {
   state = {
     members: [],
     refreshed: true,
-    credential_id: null,
+    error: null,
   };
 
   async componentDidMount() {
@@ -58,14 +64,35 @@ class Members extends React.Component {
       this.apiClient.reloadMembers(this.state.credential_id).then((data) => {
         if (data['success']) {
           this.setState({...this.state, refreshed: true})
-        } else {
-          var authorize_url = data['authorize_url']
-          var param = 'origin_url=' + window.location.href
-          authorize_url += (authorize_url.split('?')[1] ? '&':'?') + param
-          window.location = authorize_url
         }
       });
     });
+  }
+
+  handleAlertDialogClose = () => {
+    this.setState({ error: null })
+  }
+
+  renderAlertDialog = () => {
+    return (
+      <Dialog
+        open={this.state.error !== null}
+        onClose={this.handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Task failed with error: {this.state.error}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={this.handleAlertDialogClose} color="primary" autoFocus>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    )
   }
 
   renderTipText = () => {
@@ -105,6 +132,7 @@ class Members extends React.Component {
           Sync
         </Button>
         {this.renderTipText()}
+        {this.renderAlertDialog()}
         {this.renderMemberList(this.state.members)}
       </div>
     );

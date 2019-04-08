@@ -25,32 +25,24 @@ class APIClient {
       'get', '/presenter/' + encodeURIComponent(username));
   }
 
-  getPoster(session_id, credential_id) {
-    var url = '/event_poster/' + session_id
-    if (credential_id) {
-      url += ('?credential_id=' + credential_id)
-    }
-    return this.perform('get', url);
+  getPoster(session_id) {
+    return this.perform('get', '/event_poster/' + session_id);
   }
 
-  refresh(credential_id) {
-    var url = '/refresh_events'
-    if (credential_id) {
-      url += ('?credential_id=' + credential_id)
-    }
-    return this.perform('get', url);
+  reloadEvents() {
+    return this.perform('get', '/refresh_events');
   }
 
-  reloadMembers(credential_id) {
-    var url = '/refresh_members'
-    if (credential_id) {
-      url += ('?credential_id=' + credential_id)
-    }
-    return this.perform('get', url);
+  reloadMembers() {
+    return this.perform('get', '/refresh_members');
   }
 
   getMembers() {
     return this.perform('get', '/members');
+  }
+
+  storeGoogleCreds(tokenObj) {
+    return this.perform('post', '/store_google_creds', tokenObj);
   }
 
   async perform(method, resource, data) {

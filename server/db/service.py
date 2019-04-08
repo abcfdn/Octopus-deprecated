@@ -52,6 +52,10 @@ class Service(object):
         member = self.member_store.find({'email': email})
         return self.dump_member(member)
 
+    def set_member(self, selector, fieldname, fieldvalue):
+        self.member_store.update_one(
+            selector, {'$set': {fieldname: fieldvalue}})
+
     def get_members(self):
         members = self.member_store.find_all({}, max_cnt=1000)
         return [self.dump_member(m) for m in members]
@@ -67,14 +71,11 @@ class Service(object):
         picture = self.picture_store.find({'photo_id': photo_id})
         return self.dump_picture(picture)
 
-    def get_credential(self, session_id):
-        return self.credential_store.find({'_id': ObjectId(session_id)})
+    def get_credential(self, user, source):
+        return self.credential_store.find({'user': user, 'source': source})
 
-    def get_credential_by_token(self, token):
-        return self.credential_store.find({'credentials.token': token})
-
-    def create_session(self, session):
-        return str(self.credential_store.create(session))
+    def create_credential(self, creds):
+        self.credential_store.create(creds)
 
     def dump_session(self, data):
        return SessionSchema(exclude=['_id']).dump(data).data

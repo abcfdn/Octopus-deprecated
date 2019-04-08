@@ -5,10 +5,12 @@ import sys
 
 import logging
 import json
+import csv
 
 import server.platforms.utils.util as util
 from server.platforms.google.sheet import GoogleSheet
 from server.platforms.google.photo import GooglePhoto
+from server.platforms.imgur import Imgur
 from server.db.mongo import MongoConnection, MemberStore
 from server.workflow.base import Task
 
@@ -27,11 +29,11 @@ class MemberSync(Task):
     NUM_OF_ROWS_TO_READ = 1000
     FIELDS_TO_COMPARE = ['session_name', 'presenter_name']
 
-    def __init__(self, google_creds, mongo_config):
+    def __init__(self, google_creds, imgur_creds, mongo_config):
         super().__init__(google_creds)
         self.sheet_service = GoogleSheet(google_creds)
-        self.load_members()
         self.card_generator = MembershipCard(google_creds)
+        self.imgur_service = Imgur(imgur_creds)
         self.photo_service = GooglePhoto(google_creds)
         self.member_store = MemberStore(MongoConnection(mongo_config))
 
@@ -64,41 +66,40 @@ class MemberSync(Task):
         key = 'do_you_want_be_a_volunteer_for_future_abc_events_?'
         volunteer = member.get(key, 'No')
         member['volunteer_candidate'] = volunteer.lower().startswith('yes')
+        member['your_full_name'] = util.canonicalize_name(member['your_full_name'])
         return self.transform_one(member)
 
     def sync(self):
+        self.load_members()
         to_insert = []
         for member in self.members.values():
             existing_member = self.member_store.find({'email': member['email']})
             if not existing_member:
                 to_insert.append(member)
         logger.info("Will insert {} among {} members".format(len(to_insert), len(self.members)))
-#        self.add_membership_card(to_insert)
+        self.add_membership_card(to_insert)
         for member in to_insert:
             logger.info('Inserting {}'.format(member))
             self.member_store.create(member)
-
-    def get_base_url(self, photo_id):
-        result = self.photo_service.get_photo(photo_id)
-        return json.loads(result).get('baseUrl', '')
+        self.sync_membership_card()
 
     def add_membership_card(self, members):
         filepath2member = {}
         for member in members:
             filepath = self.card_generator.process(member)
             filepath2member[filepath] = member
-        token2filepath = self.photo_service.upload(filepath2member.keys())
-        results = self.photo_service.batch_create_items(list(token2filepath.keys()))
-        for result in results:
-            token = result['uploadToken']
-            member = filepath2member[token2filepath[token]]
-            member['membership_card'] = {
-                'filename': result['mediaItem']['filename'],
-                'photo_id': result['mediaItem']['id'],
-                'base_url': result['mediaItem'].get('baseUrl', '') or self.get_base_url(result['mediaItem']['id']),
-                'product_url': result['mediaItem']['productUrl'],
-                'upload_token': token
-            }
+#        token2filepath = self.photo_service.upload(filepath2member.keys())
+#        results = self.photo_service.batch_create_items(list(token2filepath.keys()))
+
+    def sync_membership_card(self):
+        cards = self.photo_service.get_photos(self.config['data']['google_photo']['album_id'])
+#        cards = self.imgur_service.get_photos(self.config['data']['google_photo']['album_id'])
+        logger.info(cards)
+#        for card in cards:
+#            email = os.path.splitext(os.path.basename(card['filename']))[0]
+#            logger.info("Adding membership card for {} with {}".format(email, card))
+#            self.member_store.update(
+#                {'email': email}, {'$set': {'membership_card': card}})
 
     def load_members(self):
         self.members = []

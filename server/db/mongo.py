@@ -65,7 +65,7 @@ class PictureStore(MongoStore):
 
 class CredentialStore(MongoStore):
     def get_coll_name(self):
-        return "google_credentials"
+        return "credentials"
 
 class MemberStore(MongoStore):
     def get_coll_name(self):

@@ -11,6 +11,14 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Button from '@material-ui/core/Button';
 import Link from 'react-router-dom/Link';
 
+import TextField from '@material-ui/core/TextField';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+
+import { GoogleLogin } from 'react-google-login';
+
 import queryString from 'query-string';
 
 import APIClient from '../apiClient'
@@ -38,7 +46,7 @@ class Home extends React.Component {
   state = {
     sessions: [],
     refreshed: true,
-    credential_id: null,
+    error: null,
   };
 
   async componentDidMount() {
@@ -56,15 +64,11 @@ class Home extends React.Component {
     this.setState({...this.state, refreshed: false})
     this.props.auth.getAccessToken().then((token) => {
       this.apiClient = new APIClient(token);
-      this.apiClient.refresh(this.state.credential_id).then((data) => {
-        if (data['success']) {
-          this.setState({...this.state, refreshed: true})
-        } else {
-          var authorize_url = data['authorize_url']
-          var param = 'origin_url=' + window.location.href
-          authorize_url += (authorize_url.split('?')[1] ? '&':'?') + param
-          window.location = authorize_url
+      this.apiClient.reloadEvents().then((data) => {
+        if (!data['success']) {
+          this.setState({...this.state, error: data.error})
         }
+        this.setState({...this.state, refreshed: true})
       });
     });
   }
@@ -96,6 +100,43 @@ class Home extends React.Component {
     }
   }
 
+  handleAlertDialogClose = () => {
+    this.setState({ error: null })
+  }
+
+  renderAlertDialog = () => {
+    return (
+      <Dialog
+        open={this.state.error !== null}
+        onClose={this.handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Task failed with error: {this.state.error}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={this.handleAlertDialogClose} color="primary" autoFocus>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    )
+  }
+
+  responseGoogle = (response) => {
+    this.props.auth.getAccessToken().then((token) => {
+      this.apiClient = new APIClient(token);
+      this.apiClient.storeGoogleCreds(response.tokenObj).then((data) => {
+        if (!data['success']) {
+          this.setState({...this.state, error: data.error})
+        }
+      });
+    });
+  }
+
   render() {
     return (
       <div className={styles.root}>
@@ -108,10 +149,18 @@ class Home extends React.Component {
          className={styles.button}>
           Sync
         </Button>
+        <GoogleLogin
+          clientId="1044583108938-rk6k1qnsk5du3d4el6ba1pofi3kaft0s.apps.googleusercontent.com"
+          buttonText="Login"
+          onSuccess={this.responseGoogle}
+          onFailure={this.responseGoogle}
+          cookiePolicy={'single_host_origin'}
+        />
         {this.renderTipText()}
         <Link to='/members'>
           Members
         </Link>
+        {this.renderAlertDialog()}
         {this.renderSessionList(this.state.sessions)}
       </div>
     );

@@ -4,15 +4,27 @@ import os
 import sys
 sys.path.append("..")
 
+import logging
+import csv
+import json
 import datetime
 
 from server.db.service import Service
 import server.platforms.utils.util as util
 from server.platforms.google.photo import GooglePhoto
+from server.platforms.imgur import Imgur
 from server.workflow.tasks.whitepaper_journal.event_poster import WhitepaperJournalEventPoster
 from server.scripts.data_sync import DataSync
 from server.workflow.tasks.membership.sync import MemberSync
+from server.db.mongo import MongoConnection, MemberStore
 from google.oauth2 import service_account
+
+from pprint import pprint
+
+FORMAT = '%(asctime)s %(levelname)s %(message)s'
+logging.basicConfig(format=FORMAT)
+logger = logging.getLogger('script')
+logger.setLevel(logging.INFO)
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(ROOT_DIR, 'config.yaml')
@@ -62,10 +74,36 @@ def data_sync():
 
 def member_sync():
     config = util.load_yaml(COMMON_CONFIG_PATH)
-    MemberSync(google_creds(config), config['mongo']).sync()
+    MemberSync(google_creds(config), config['imgur'], config['mongo']).sync_membership_card()
+
+def member_card_test():
+    config = util.load_yaml(COMMON_CONFIG_PATH)
+    imgur = Imgur(config['imgur']['creds_file'])
+#    photos = imgur.get_photos('TTA1Bp4')
+    photos = {"chengma369@gmail.com": "/tmp/abc_apps/membership/card/output/chengma369@gmail.com.png"}
+    imgur.upload_photos(photos, 'XaBxokL')
+    pprint(photos[0].__dict__)
+
+def get_member_info():
+    config = util.load_yaml(COMMON_CONFIG_PATH)
+    conn = MongoConnection(config['mongo'])
+    store = MemberStore(conn)
+    members = store.find_all({}, max_cnt=1000)
+    with open('/root/members.csv', 'w') as f:
+        fieldnames = ['name', 'email', 'card']
+        writer = csv.DictWriter(f, delimiter=',', fieldnames=fieldnames)
+        writer.writeheader()
+        for member in members:
+            row = {
+                'name': member.get('name', ''),
+                'email': member.get('email', ''),
+                'card': member.get('membership_card', {}).get('baseUrl', '')
+            }
+            writer.writerow(row)
+
 
 def main():
-    member_sync()
+    member_card_test()
 
 if __name__ == '__main__':
     main()
