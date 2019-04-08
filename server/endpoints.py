@@ -97,7 +97,7 @@ def sync_members():
 #    MemberSync(credentials, config['mongo']).sync()
     MemberSync(credentials,
         config['imgur']['creds_file'],
-        config['mongo']).sync_membership_card()
+        config['mongo']).sync()
     return json_response({'success': True})
 
 

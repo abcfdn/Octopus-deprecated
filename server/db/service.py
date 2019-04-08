@@ -3,7 +3,7 @@
 from bson.objectid import ObjectId
 from datetime import datetime
 
-from .schema import SessionSchema, PresenterSchema, PhotoSchema, MemberSchema
+from .schema import SessionSchema, PresenterSchema, MemberSchema
 from .mongo import MongoConnection, PresenterStore, SessionStore, PictureStore, CredentialStore, MemberStore
 
 class Service(object):
@@ -64,13 +64,6 @@ class Service(object):
         presenter = self.presenter_store.find({'email': email})
         return self.dump_presenter(presenter)
 
-    def store_photo(self, data):
-        return self.picture_store.create(self.dump_picture(data))
-
-    def get_photo(self, photo_id):
-        picture = self.picture_store.find({'photo_id': photo_id})
-        return self.dump_picture(picture)
-
     def get_credential(self, user, source):
         return self.credential_store.find({'user': user, 'source': source})
 
@@ -82,9 +75,6 @@ class Service(object):
 
     def dump_presenter(self, data):
        return PresenterSchema(exclude=['_id']).dump(data).data
-
-    def dump_picture(self, data):
-       return PhotoSchema(exclude=['_id']).dump(data).data
 
     def dump_member(self, data):
        return MemberSchema(exclude=['_id']).dump(data).data

@@ -79,8 +79,7 @@ def member_sync():
 def member_card_test():
     config = util.load_yaml(COMMON_CONFIG_PATH)
     imgur = Imgur(config['imgur']['creds_file'])
-#    photos = imgur.get_photos('TTA1Bp4')
-    photos = {"chengma369@gmail.com": "/tmp/abc_apps/membership/card/output/chengma369@gmail.com.png"}
+    photos = imgur.get_photos('TTA1Bp4')
     imgur.upload_photos(photos, 'XaBxokL')
     pprint(photos[0].__dict__)
 

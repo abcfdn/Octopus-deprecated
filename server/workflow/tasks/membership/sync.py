@@ -77,29 +77,22 @@ class MemberSync(Task):
             if not existing_member:
                 to_insert.append(member)
         logger.info("Will insert {} among {} members".format(len(to_insert), len(self.members)))
-        self.add_membership_card(to_insert)
         for member in to_insert:
             logger.info('Inserting {}'.format(member))
             self.member_store.create(member)
-        self.sync_membership_card()
+        self.add_membership_card()
 
-    def add_membership_card(self, members):
-        filepath2member = {}
-        for member in members:
-            filepath = self.card_generator.process(member)
-            filepath2member[filepath] = member
-#        token2filepath = self.photo_service.upload(filepath2member.keys())
-#        results = self.photo_service.batch_create_items(list(token2filepath.keys()))
-
-    def sync_membership_card(self):
-        cards = self.photo_service.get_photos(self.config['data']['google_photo']['album_id'])
-#        cards = self.imgur_service.get_photos(self.config['data']['google_photo']['album_id'])
-        logger.info(cards)
-#        for card in cards:
-#            email = os.path.splitext(os.path.basename(card['filename']))[0]
-#            logger.info("Adding membership card for {} with {}".format(email, card))
-#            self.member_store.update(
-#                {'email': email}, {'$set': {'membership_card': card}})
+    def add_membership_card(self):
+        for member in self.members.values():
+            email = member['email']
+            res = self.member_store.find({
+                    "email": email, "member_card":{"$exists": True}})
+            if not res:
+                local_path = self.card_generator.process(member)
+                card = self.imgur_service.upload_photo(email, local_path)
+                logger.info("Adding membership card for {} with {}".format(email, card))
+                self.member_store.update(
+                    {'email': email}, {'$set': {'member_card': card}})
 
     def load_members(self):
         self.members = []

@@ -14,21 +14,21 @@ class Imgur:
         self.client = ImgurClient(
             creds['client_id'], creds['client_secret'])
 
-    def upload(self, photo_id, photo_path):
+    def upload_photo(self, photo_id, photo_path):
         config = {
-            'name':  photo_id,
-            'title': photo_id,
-            'description': photo_id}
+            'name':  'N/A',
+            'title': 'N/A',
+            'description': 'N/A'}
         image = self.client.upload_from_path(photo_path, config=config, anon=False)
-        logger.info(image)
-        return image['id']
+        logger.info('Uploaded photo {} for {}'.format(image, photo_id))
+        image['local_path'] = photo_path
+        return image
 
-    def upload_photos(self, photos, album_id):
-        ids = []
-        for photo_id in photos.keys():
-            ids.append(self.upload(photo_id, photos[photo_id]))
-        logger.info(ids)
-        self.client.album_add_images(album_id, ids)
+    def upload_photos(self, photos):
+        return {
+            photo_id: self.upload(photo_id, photos[photo_id])
+            for photo_id in photos.keys()
+        }
 
     def get_photos(self, album_id, max_cnt=1000):
         return self.client.get_album_images(album_id)

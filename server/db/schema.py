@@ -61,7 +61,7 @@ class SessionSchema(Schema):
         if language and language.lower() not in ['english', 'chinese']:
             raise ValidationError('Only Chinese and English are supported..')
 
-class PhotoSchema(Schema):
+class GooglePhotoSchema(Schema):
     filename = fields.Str()
     photo_id = fields.Str()
     decription = fields.Str()
@@ -69,6 +69,13 @@ class PhotoSchema(Schema):
     album_id = fields.Str()
     base_url = fields.Str()
     product_url = fields.Str()
+
+class ImgurPhotoSchema(Schema):
+    link = fields.Str()
+    id = fields.Str()
+    deletehash = fields.Str()
+    description = fields.Str()
+    type = fields.Str()
 
 class MemberSchema(Schema):
     name = fields.Str()
@@ -86,5 +93,5 @@ class MemberSchema(Schema):
     volunteer_candidate = fields.Boolean()
     suggestion = fields.Str()
     self_intro = fields.Str()
-    photo = fields.Nested(PhotoSchema)
-    membership_card = fields.Nested(PhotoSchema)
+    member_card = fields.Nested(ImgurPhotoSchema)
+    membership_card = fields.Nested(GooglePhotoSchema)
